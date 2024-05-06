@@ -2,13 +2,10 @@
 let organisms = [];
 let foods = [];
 let numFood = 100;
-let numOrganisms = 100;
+let numOrganisms = 200;
 
 let newFoodProbability = 0.05;
 
-let centerX = 250;
-let centerY = 250;
-let circleRadius = 100;
 
 function setup() {
     createCanvas(1500, 750);
@@ -23,14 +20,14 @@ function setup() {
 
 function draw() {
     background(253, 248, 241);
-
+    // frameRate(10);
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
         textSize(40);
         textStyle(BOLD);
         fill(255, 0, 0);
         noStroke();
-        text("Simulation #29372 has gone extinct. Good job I guess...", width / 2, height / 2);
+        text(`Simulation #${int(random(0, 1000))} has gone extinct. Good job I guess...`, width / 2, height / 2);
         return;
     }
 
@@ -50,7 +47,7 @@ function draw() {
         organism.eat(foods);
         organism.mate(organisms);
 
-        organism.move();
+        organism.move(i);
         organism.update();
         organism.display();
         
@@ -58,6 +55,4 @@ function draw() {
             organisms.pop(i);
         }
     }
-
-    drawShape();
 }

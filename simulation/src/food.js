@@ -11,7 +11,7 @@ class Food {
     constructor(type) {
         this.timeAlive = 0;
         this.type = type; 
-        this.size = 6;
+        this.size = 4;
         this.position = createVector(random(width), random(height));
     }
   

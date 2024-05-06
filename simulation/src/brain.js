@@ -1,117 +1,77 @@
-class Node {
-    constructor(id) {
-        this.id = id;
-        this.inputSum = 0;
-        this.outputValue = 0;
-        this.connections = [];
+class Brain {
+    constructor() {
+        this.inputSize = 3;
+        this.hiddenSize = 3;
+        this.outputSize = 1;
+
+        this.randomInitializeBrain();
     }
-}
 
-class Connection {
-    constructor(from, to, weight) {
-        this.from = from;
-        this.to = to;
-        this.weight = weight;
-        this.enabled = true;
+    randomInitializeBrain() {
+        this.weightMatrix1 = this.initializeMatrix(this.hiddenSize, this.inputSize);
+        this.weightMatrix2 = this.initializeMatrix(this.outputSize, this.hiddenSize);
     }
-}
 
-class Genome {
-    constructor(inputSize, outputSize) {
-        this.inputSize = inputSize;
-        this.outputSize = outputSize;
-        this.nodes = [];
-        this.connections = [];
-        this.nextNodeId = 0;
-
-        // Create input nodes
-        for (let i = 0; i < inputSize; i++) {
-            this.nodes.push(new Node(this.nextNodeId++));
-        }
-
-        // Create output nodes
-        for (let i = 0; i < outputSize; i++) {
-            this.nodes.push(new Node(this.nextNodeId++));
-        }
-
-        // Create connections between input and output nodes
-        for (let i = 0; i < inputSize; i++) {
-            for (let j = inputSize; j < inputSize + outputSize; j++) {
-                this.connections.push(new Connection(this.nodes[i], this.nodes[j], Math.random()));
+    initializeMatrix(rows, cols) {
+        let matrix = new Array(rows);
+        for (let i = 0; i < rows; i++) {
+            matrix[i] = new Array(cols);
+            for (let j = 0; j < cols; j++) {
+                matrix[i][j] = this.randomFloat(-2, 2);
             }
         }
+        return matrix;
     }
 
-    setInputValues(inputValues) {
-        if (inputValues.length !== this.inputSize) {
-            throw new Error("Input size mismatch");
+    sigmoid(x, length) {
+        for (let i = 0; i < length; i++) {
+            x[i] = 1.0 / (1.0 + Math.exp(-x[i]));
         }
-
-        for (let i = 0; i < this.inputSize; i++) {
-            this.nodes[i].outputValue = inputValues[i];
-        }
+        return x;
     }
 
-    feedForward() {
-        for (let node of this.nodes) {
-            node.inputSum = 0;
+    tanh(x, length) {
+        for (let i = 0; i < length; i++) {
+            x[i] = (Math.exp(x[i]) - Math.exp(-x[i])) / (Math.exp(x[i]) + Math.exp(-x[i]));
         }
+        return x;
+    }
 
-        for (let connection of this.connections) {
-            if (connection.enabled) {
-                connection.to.inputSum += connection.from.outputValue * connection.weight;
+    relu(x, length) {
+        for (let i = 0; i < length; i++) {
+            if (x[i] < 0.0) {
+                x[i] = 0.0;
+            } else {
+                x[i] = x[i];
+            }
+        }
+        return x;
+    }
+
+    dot(w, x, matRows, matCols) {
+        let result = new Array(matRows).fill(0.0);
+
+        for (let i = 0; i < matRows; i++) {
+            for (let j = 0; j < matCols; j++) {
+                result[i] += w[i][j] * x[j];
             }
         }
 
-        for (let node of this.nodes) {
-            if (node.id >= this.inputSize) {
-                node.outputValue = sigmoid(node.inputSum);
-            }
-        }
+        return result;
     }
 
-    getOutputValues() {
-        let outputValues = [];
-        for (let i = this.inputSize; i < this.inputSize + this.outputSize; i++) {
-            outputValues.push(this.nodes[i].outputValue);
-        }
-        return outputValues;
-    }
-}
+    forward(observation) {
+        let input = observation;
+        let hiddenLayer = this.sigmoid(this.dot(this.weightMatrix1, input, this.hiddenSize, this.inputSize), this.hiddenSize);
+        let output = this.sigmoid(this.dot(this.weightMatrix2, hiddenLayer, this.outputSize, this.hiddenSize), this.outputSize);
 
-function sigmoid(x) {
-    return 1 / (1 + Math.exp(-x));
-}
+        // no hidden layer forward feed
+        // let output = this.sigmoid(this.dot(this.weightMatrix1, input, this.outputSize, this.inputSize), this.outputSize);
 
-class NEATNetwork {
-    constructor(inputSize, outputSize) {
-        this.inputSize = inputSize;
-        this.outputSize = outputSize;
-        this.genome = new Genome(inputSize, outputSize);
+        return output;
     }
 
-    feedForward(input1, input2) {
-        // Normalize inputs to the range [0, 1]
-        let normalizedInput1 = input1;
-        let normalizedInput2 = input2;
-
-        // Set input values
-        this.genome.setInputValues([normalizedInput1, normalizedInput2]);
-
-        // Perform feedforward pass
-        this.genome.feedForward();
-
-        // Get output values
-        let outputValues = this.genome.getOutputValues();
-
-        return outputValues[0]; // Assuming outputSize is 1
+    randomFloat(min, max) {
+        return Math.random() * (max - min) + min;
     }
 }
-
-// Example usage:
-let network = new NEATNetwork(2, 1); // Input size: 2, Output size: 1
-let input1 = 0.5;
-let input2 = 0.7;
-
-let output = network.feedForward(input1, input2);
-console.log("Output:", output);
