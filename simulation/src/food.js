@@ -1,7 +1,7 @@
 
 
 const FoodType = {
-    Plant: 20,
+    Plant: 30,
     Rotten: -5,
     Poisoned: -20
 };
@@ -11,7 +11,7 @@ class Food {
     constructor(type) {
         this.timeAlive = 0;
         this.type = type; 
-        this.size = 4;
+        this.size = 5;
         this.position = createVector(random(width), random(height));
     }
   
@@ -25,12 +25,12 @@ class Food {
         }
 
         noStroke();
-        ellipse(this.position.x, this.position.y, this.size);
+        ellipse(this.position.x, this.position.y, int(this.size));
     }
 
     update() {
         this.timeAlive += 1;
-        if (this.timeAlive == 1000) {
+        if (this.timeAlive == 3000) {
             this.type = FoodType.Rotten;
         }
     }

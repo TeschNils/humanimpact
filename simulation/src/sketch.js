@@ -1,10 +1,10 @@
 
 let organisms = [];
 let foods = [];
-let numFood = 100;
-let numOrganisms = 200;
+let numFood = 200;
+let numOrganisms = 300;
 
-let newFoodProbability = 0.05;
+let newFoodProbability = 0.125;
 
 
 function setup() {
@@ -20,14 +20,15 @@ function setup() {
 
 function draw() {
     background(253, 248, 241);
-    // frameRate(10);
+    frameRate(45);
+
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
         textSize(40);
         textStyle(BOLD);
         fill(255, 0, 0);
         noStroke();
-        text(`Simulation #${int(random(0, 1000))} has gone extinct. Good job I guess...`, width / 2, height / 2);
+        text(`Species #231 has gone extinct. Good job I guess...`, width / 2, height / 2);
         return;
     }
 
@@ -44,7 +45,6 @@ function draw() {
         let organism = organisms[i];
         organism.observe(foods);
         
-        organism.eat(foods);
         organism.mate(organisms);
 
         organism.move(i);

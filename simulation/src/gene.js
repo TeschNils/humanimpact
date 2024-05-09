@@ -20,8 +20,8 @@ class Gene {
     }
 
     mutateGene() {
-        let mutatedGene = random(-this.mutationFactor, this.mutationFactor)
-        return Math.max(0.0, Math.min(this.geneScore + mutatedGene, 0.0));
+        let mutationValue = random(-this.mutationFactor, this.mutationFactor)
+        this.geneScore = Math.max(0.0, Math.min(this.geneScore + mutationValue, 1.0));
     }
 
     inherit(motherGene, fatherGene) {

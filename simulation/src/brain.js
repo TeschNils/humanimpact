@@ -4,12 +4,31 @@ class Brain {
         this.hiddenSize = 3;
         this.outputSize = 1;
 
-        this.randomInitializeBrain();
-    }
-
-    randomInitializeBrain() {
         this.weightMatrix1 = this.initializeMatrix(this.hiddenSize, this.inputSize);
         this.weightMatrix2 = this.initializeMatrix(this.outputSize, this.hiddenSize);
+
+        this.mutationChance = 0.1;
+        this.mutationFactor = 0.1;
+    }
+
+    inheritBrain(parentBrain) {
+        this.weightMatrix1 = parentBrain.weightMatrix1;
+        this.weightMatrix2 = parentBrain.weightMatrix2;
+
+        this.weightMatrix1 = this.mutateWeightMatrix(this.weightMatrix1);
+        this.weightMatrix2 = this.mutateWeightMatrix(this.weightMatrix2);
+    }
+
+    mutateWeightMatrix(weightMatrix) {
+        for (let i=0; i<weightMatrix.length; i++) {
+            for (let j=0; j<weightMatrix[0].length; j++) {
+                if (random(0, 1) < this.mutationChance) {
+                    let mutationValue = random(-this.mutationFactor, this.mutationFactor)
+                    weightMatrix[i][j] = Math.max(-1, Math.min(weightMatrix[i][j] + mutationValue, 1.0));
+                }
+            }
+        }
+        return weightMatrix;
     }
 
     initializeMatrix(rows, cols) {
@@ -17,7 +36,7 @@ class Brain {
         for (let i = 0; i < rows; i++) {
             matrix[i] = new Array(cols);
             for (let j = 0; j < cols; j++) {
-                matrix[i][j] = this.randomFloat(-2, 2);
+                matrix[i][j] = this.randomFloat(-1, 1);
             }
         }
         return matrix;
@@ -62,7 +81,7 @@ class Brain {
 
     forward(observation) {
         let input = observation;
-        let hiddenLayer = this.sigmoid(this.dot(this.weightMatrix1, input, this.hiddenSize, this.inputSize), this.hiddenSize);
+        let hiddenLayer = this.relu(this.dot(this.weightMatrix1, input, this.hiddenSize, this.inputSize), this.hiddenSize);
         let output = this.sigmoid(this.dot(this.weightMatrix2, hiddenLayer, this.outputSize, this.hiddenSize), this.outputSize);
 
         // no hidden layer forward feed
