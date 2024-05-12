@@ -8,11 +8,11 @@ class Gene {
         this.geneScore = random(0, 1);
 
         this.mutationChance = 0.1;
-        this.mutationFactor = 0.1;
+        this.mutationFactor = 0.05;
     }
 
     getGeneValue(value, min, max) {
-        return Math.round(value * (max - min) + min)
+        return value * (max - min) + min;
     }
 
     getGene() {
