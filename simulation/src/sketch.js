@@ -4,7 +4,7 @@ let organisms = [];
 let foods = [];
 let numFood = 300;
 let numOrganisms = 300;
-let newFoodProbability = 0.04;
+let newFoodProbability = 0.1;
 
 let populationHistory = [numOrganisms];
 let generationDistribution;
@@ -100,6 +100,7 @@ function draw() {
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
+    filter(INVERT);
 }
 
 
@@ -129,3 +130,10 @@ function saveSimulation() {
 function loadSimulation() {
     // TODO
 }
+
+
+setInterval(() => {
+    let timeDisplay = document.getElementsByClassName("time-display")[0];
+    let dt = new Date();
+    timeDisplay.textContent = new Date().toJSON().split(".")[0];
+}, 1000);

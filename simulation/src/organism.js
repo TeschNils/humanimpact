@@ -6,10 +6,13 @@ class Organism {
         this.generation = 0;
 
         this.energy = 1.0;
-        this.energyLoss = 0.00175;
+        this.initialEnergyLoss = 0.00075;
+        this.energyLossFactor = 0.00001;
+        this.currentEnergyLoss = this.initialEnergyLoss;
+
         this.timeAlive = 0;
 
-        this.wallDamage = 0.3;
+        this.wallDamage = 0.1;
 
         this.isAdult = false;
         this.color = 255;
@@ -28,13 +31,18 @@ class Organism {
             speed: new Gene(0.75, 1.25),
             size: new Gene(5, 15),
             sightReach: new Gene(45, 100),
-            sightAngle: new Gene(90, 150)
+            sightAngle: new Gene(90, 150),
+            turnAngleRange: new Gene(10, 90)
         }
-        this.turnAngleRange = 90;
+
+        // Organism can turn from -turnAngleRange/2 to +turnAngleRange/2
+        this.turnAngleRange = this.genes.turnAngleRange.getGene();
         this.turnAngle;
 
         this.brain = new Brain();
         this.observation = [];
+
+        this.neatBrain = new NEATNetwork(3, 1);
 
         this.displaySize = this.childSize;
         this.currentSpeed = 0;
@@ -55,12 +63,12 @@ class Organism {
     }
 
     energyConsumption() {
-        let speedEnergyLoss = (this.energyLoss * (this.genes.speed.geneScore / 1.25));
-        let sizeEnergyLoss = (this.energyLoss * (this.genes.size.geneScore / 15));
-        let turnAngleLoss = (this.energyLoss * (Math.abs(this.turnAngle) / (this.turnAngleRange / 2)));
-        this.energy -= speedEnergyLoss + sizeEnergyLoss// + turnAngleLoss;
+        let speedEnergyLoss = (this.currentEnergyLoss * (this.genes.speed.geneScore / 1.25));
+        let sizeEnergyLoss = (this.currentEnergyLoss * (this.genes.size.geneScore / 15));
+        let turnAngleLoss = (this.currentEnergyLoss * (Math.abs(this.turnAngle) / (this.turnAngleRange / 2)));
+        this.energy -= speedEnergyLoss + sizeEnergyLoss + turnAngleLoss;
 
-        this.energyLoss = 0.001 * Math.exp(0.0001 * this.timeAlive)
+        this.currentEnergyLoss = this.initialEnergyLoss * Math.exp(this.energyLossFactor * this.timeAlive);
     }
 
     observe(foods) {
@@ -150,6 +158,8 @@ class Organism {
         else {
             this.brain.inheritBrain(fatherOrganism.brain);
         }
+
+        this.neatBrain.crossoverAndMutate(motherOrganism.neatBrain, fatherOrganism.neatBrain);
     }
 
     mate(organisms) {
@@ -173,7 +183,7 @@ class Organism {
             ) {
                 
                 let childAmount = 1;
-                if (this.energy > 8.0 && otherOrganism.energy > 8.0) {
+                if (this.energy > 5.0 && otherOrganism.energy > 5.0) {
                     childAmount = 2;
                 }
 
@@ -195,7 +205,8 @@ class Organism {
     }
 
     move(i) {
-        let actions = this.brain.forward(this.observation);
+        // let actions = this.brain.forward(this.observation);
+        let actions = this.neatBrain.feedForward(this.observation);
 
         let turnAngleOutput = actions[0];        
         let turnAngleDeg = turnAngleOutput * (this.turnAngleRange * 2) - this.turnAngleRange;
