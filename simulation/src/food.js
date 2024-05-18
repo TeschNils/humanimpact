@@ -13,7 +13,9 @@ class Food {
         this.timeAlive = 0;
         this.type = type; 
         this.size = 5;
-        this.position = createVector(random(width), random(height));
+        this.boundryX = 200;
+        this.boundryY = 200;
+        this.position = createVector(random(this.boundryX), random(this.boundryY));
 
         this.desintegrated = false;
     }
@@ -30,8 +32,11 @@ class Food {
             fill(240, 105, 105);
         }
 
+        let transformfactorX = width / this.boundryX; 
+        let transformfactorY = height / this.boundryY; 
+
         noStroke();
-        ellipse(this.position.x, this.position.y, int(this.size));
+        ellipse(this.position.x * transformfactorX, this.position.y*transformfactorY, int(this.size));
     }
 
     update() {

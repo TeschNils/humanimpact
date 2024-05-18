@@ -1,9 +1,7 @@
-
-
 let organisms = [];
 let foods = [];
 let numFood = 300;
-let numOrganisms = 300;
+let numOrganisms = 100;
 let newFoodProbability = 0.1;
 
 let populationHistory = [numOrganisms];

@@ -55,7 +55,11 @@ class Organism {
         this.sensorLeft = p5.Vector.random2D();
         this.sensorRight = p5.Vector.random2D();
 
-        this.position = createVector(random(width), random(height));
+        this.boundryX = 200;    
+        this.boundryY = 200;
+        this.transformfactorX = width / this.boundryX; 
+        this.transformfactorY = height / this.boundryY; 
+        this.position = createVector(random(this.boundryX), random(this.boundryY));
         this.direction = p5.Vector.random2D();
 
         this.prevDirection = p5.Vector.random2D();
@@ -121,7 +125,7 @@ class Organism {
 
             if (this.visualDebug) {
                 fill(0, 0, 255);
-                circle(food.position.x, food.position.y, 4);
+                circle(food.position.x * this.transformfactorX, food.position.y * this.transformfactorY, 4);
             }
 
             foodDistance1 = this.sensorLeft.dist(food.position) / largestSensorDistance;
@@ -129,9 +133,9 @@ class Organism {
 
             if (this.visualDebug) {
                 stroke(255, 0, 0)
-                line(this.sensorLeft.x, this.sensorLeft.y, food.position.x, food.position.y);
+                line(this.sensorLeft.x * this.transformfactorX, this.sensorLeft.y * this.transformfactorY, food.position.x * this.transformfactorX, food.position.y * this.transformfactorY);
                 stroke(0, 0, 255);
-                line(this.sensorRight.x, this.sensorRight.y, food.position.x, food.position.y);
+                line(this.sensorRight.x * this.transformfactorX, this.sensorRight.y * this.transformfactorY, food.position.x * this.transformfactorX, food.position.y * this.transformfactorY);
             }
             
 
@@ -221,11 +225,11 @@ class Organism {
         this.position = this.position.add(this.direction.mult(this.speed));
         
         // Handle wall collisions
-        if (this.position.x < this.size / 2 || this.position.x > width - this.size / 2) {
+        if (this.position.x < this.size / 2 || this.position.x > this.boundryX - this.size / 2) {
             this.direction.x *= -1;
             this.energy -= this.wallDamage;
         }
-        if (this.position.y < this.size / 2 || this.position.y > height - this.size / 2) {
+        if (this.position.y < this.size / 2 || this.position.y > this.boundryY - this.size / 2) {
             this.direction.y *= -1;
             this.energy -= this.wallDamage;
         }
@@ -244,26 +248,28 @@ class Organism {
     }
   
     display() {
+
+
         fill(this.color);
         strokeWeight(1)
         stroke(100);
 
         // Draw head
-        ellipse(this.position.x, this.position.y, this.displaySize);
+        ellipse(this.position.x*this.transformfactorX, this.position.y*this.transformfactorY, this.displaySize*this.transformfactorX);
 
         // Draw mid body
         this.prevDirection.normalize();
         let mid = p5.Vector.random2D();
         mid.x = this.position.x - this.prevDirection.x * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
         mid.y = this.position.y - this.prevDirection.y * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
-        ellipse(mid.x, mid.y, this.displaySize / 2);
+        ellipse(mid.x*this.transformfactorX, mid.y*this.transformfactorY, this.displaySize*this.transformfactorX / 2);
 
         // Draw lower body
         this.prevDirection2.normalize();
         let lower = p5.Vector.random2D();
         lower.x = mid.x - this.prevDirection2.x * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
         lower.y = mid.y - this.prevDirection2.y * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
-        ellipse(lower.x, lower.y, this.displaySize / 3);
+        ellipse(lower.x*this.transformfactorX, lower.y*this.transformfactorY, this.displaySize*this.transformfactorX / 3);
 
         // Draw sensors
         let maxReachLine = this.displaySize * 1.25;
@@ -277,15 +283,15 @@ class Organism {
         if (this.visualDebug) {
             noFill();
             stroke(0, 0, 0, 50);
-            circle(this.position.x, this.position.y, this.sightReach * 2);
+            circle(this.position.x * this.transformfactorX, this.position.y * this.transformfactorY, this.sightReach * this.transformfactorX * 2);
             stroke(0, 0, 0, 100)
-            line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * this.sightReach, this.position.y + displaySensorLeft.y * this.sightReach);
-            line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * this.sightReach, this.position.y + displaySensorRight.y * this.sightReach);
+            line(this.position.x * this.transformfactorX, this.position.y * this.transformfactorY, this.position.x * this.transformfactorX + displaySensorLeft.x * this.transformfactorX * this.sightReach, this.position.y * this.transformfactorY + displaySensorLeft.y * this.transformfactorY * this.sightReach);
+            line(this.position.x * this.transformfactorX, this.position.y * this.transformfactorY, this.position.x * this.transformfactorX + displaySensorRight.x * this.transformfactorX * this.sightReach, this.position.y * this.transformfactorY + displaySensorRight.y * this.transformfactorY * this.sightReach);
         }
         else {
             stroke(0, 0, 0, 100)
-            line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
-            line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
+            line(this.position.x * this.transformfactorX, this.position.y * this.transformfactorY, this.position.x * this.transformfactorX + displaySensorLeft.x*this.transformfactorX * reachLineFactor, this.position.y* this.transformfactorY + displaySensorLeft.y* this.transformfactorY * reachLineFactor);
+            line(this.position.x * this.transformfactorX, this.position.y * this.transformfactorY, this.position.x * this.transformfactorX + displaySensorRight.x*this.transformfactorX * reachLineFactor, this.position.y* this.transformfactorY + displaySensorRight.y* this.transformfactorY * reachLineFactor);
         }
     }
 }
