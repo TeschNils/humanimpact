@@ -13,8 +13,8 @@ class Food {
         this.timeAlive = 0;
         this.type = type; 
         this.size = 5;
-        this.boundryX = 200;
-        this.boundryY = 200;
+        this.boundryX = 500;
+        this.boundryY = 500;
         this.position = createVector(random(this.boundryX), random(this.boundryY));
 
         this.desintegrated = false;

@@ -94,11 +94,13 @@ function simulationStep() {
 
 
 function draw() {
-    frameRate(45);
+    //frameRate(60);
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
     filter(INVERT);
+    let fps = frameRate();
+    text(fps, 50, 50);
 }
 
 

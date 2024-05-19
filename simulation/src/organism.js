@@ -55,8 +55,8 @@ class Organism {
         this.sensorLeft = p5.Vector.random2D();
         this.sensorRight = p5.Vector.random2D();
 
-        this.boundryX = 200;    
-        this.boundryY = 200;
+        this.boundryX = 500;    
+        this.boundryY = 500;
         this.transformfactorX = width / this.boundryX; 
         this.transformfactorY = height / this.boundryY; 
         this.position = createVector(random(this.boundryX), random(this.boundryY));
