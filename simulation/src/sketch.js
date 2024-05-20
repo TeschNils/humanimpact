@@ -190,6 +190,15 @@ function keyPressed(event) {
     }
 }
 
+addEventListener("resize", () => {
+    width = 0;
+    height = 0;
+    console.log(document.getElementById("simulation-container").offsetWidth);
+    console.log(document.getElementById("simulation-container").offsetHeight);
+    resizeCanvasToParent();
+    plotCharts();
+});
+
 
 function plotCharts() {
     plotPopulation(populationHistory);
