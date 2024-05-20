@@ -17,6 +17,8 @@ let transformOffsetX = 0;
 let transformOffsetY = 0;
 let transformFactorXBase; 
 let transformFactorYBase;
+let boundryX = 0;
+let boundryY = 0;
 
 function setup() {
     canvas = createCanvas(0, 0, P2D);
@@ -156,21 +158,21 @@ function draw() {
             }
 
         }
-        if (key.toLowerCase() === "w" && transformOffsetY < ((height/2))) {
+        if (key.toLowerCase() === "w" && transformOffsetY < ((boundryY))) {
             transformOffsetY += 5;
             console.log(transformFactorY-transformFactorYBase);
             console.log();
             console.log(transformOffsetY);
         }
-        if (key.toLowerCase() === "s" && transformOffsetY > -((height/2)+(simResY*(transformFactorY-transformFactorYBase)))) {
+        if (key.toLowerCase() === "s" && transformOffsetY > -((boundryY)+(simResY*(transformFactorY-transformFactorYBase)))) {
             transformOffsetY -= 5;
             console.log(transformOffsetY);
         }
-        if (key.toLowerCase() === "a" && transformOffsetX < (width/2)) {
+        if (key.toLowerCase() === "a" && transformOffsetX < ((boundryX))) {
             transformOffsetX += 5;
             console.log(transformOffsetX);
         }
-        if (key.toLowerCase() === "d" && transformOffsetX > -((width/2)+(simResX*(transformFactorX-transformFactorXBase)))) {
+        if (key.toLowerCase() === "d" && transformOffsetX > -((boundryX)+(simResX*(transformFactorX-transformFactorXBase)))) {
             transformOffsetX -= 5;
             console.log(transformOffsetX);
         }
