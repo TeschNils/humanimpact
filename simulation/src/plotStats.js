@@ -57,7 +57,7 @@ function plotPopulation(populationOverTime) {
 }
 
 function plotGenerations(generationDistribution) {
-    console.log(generationDistribution)
+    //console.log(generationDistribution)
     let y = generationDistribution;
     let x = [...Array(generationDistribution.length).keys()]
 

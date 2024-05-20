@@ -1,7 +1,7 @@
 let organisms = [];
 let foods = [];
-let numFood = 300;
-let numOrganisms = 100;
+let numFood = 100;
+let numOrganisms = 700;
 let newFoodProbability = 0.1;
 
 let populationHistory = [numOrganisms];
@@ -9,8 +9,17 @@ let generationDistribution;
 let speed = 1;
 let iteration = 0;
 
+const simResX = 500;
+const simResY = 500;
+let transformFactorX = 1;
+let transformFactorY = 1;
+let transformOffsetX = 0;
+let transformOffsetY = 0;
+let transformFactorXBase; 
+let transformFactorYBase;
+
 function setup() {
-    canvas = createCanvas(0, 0);
+    canvas = createCanvas(0, 0, P2D);
     canvas.parent("simulation-container");
     resizeCanvasToParent();
 
@@ -28,11 +37,17 @@ function resizeCanvasToParent() {
     let containerWidth = document.getElementById("simulation-container").offsetWidth;
     let containerHeight = document.getElementById("simulation-container").offsetHeight;
     resizeCanvas(containerWidth, containerHeight);
+    transformFactorX = width / simResX;
+    transformFactorY = height / simResY;
+    transformFactorXBase = transformFactorX;
+    transformFactorYBase = transformFactorY;
 }
 
 
 function simulationStep() {
     background(255, 253, 235);
+
+    rect(0+transformOffsetX, 0+transformOffsetY, simResX*transformFactorX, simResY*transformFactorY);
 
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
@@ -95,17 +110,77 @@ function simulationStep() {
 
 function draw() {
     //frameRate(60);
+
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
-    filter(INVERT);
+    //filter(INVERT);
     let fps = frameRate();
     text(fps, 50, 50);
+    if (keyIsPressed) {
+
+        if (key.toLowerCase() === "+") {
+            transformFactorX += 1/simResX * 10;
+            transformFactorY += 1/simResY * 10;
+            console.log("TransformOffsetX: "+abs(transformOffsetX));
+            console.log("Width: "+width/2);
+            console.log("TransformOffsetY: "+abs(transformOffsetY));
+            console.log("Height: "+height/2);
+            if (abs(transformOffsetX) <= (width/2)) {
+                transformOffsetX -= (5)*(-(transformOffsetX-width/2)/(width/2));
+            }
+            else {
+                transformOffsetX -= 10;
+            }
+            if (abs(transformOffsetY) <= (height/2)) {
+                transformOffsetY -= (5)*(-(transformOffsetY-height/2)/(height/2));
+            }
+            else {
+                transformOffsetY -= 10;
+            }
+        }
+        if (key.toLowerCase() === "-") {
+            transformFactorX -= 1/simResX * 10;
+            transformFactorY -= 1/simResY * 10;
+            if (abs(transformOffsetX) <= (width/2)) {
+                transformOffsetX += (5) * (-(transformOffsetX-width / 2) / (width / 2));
+            }
+            else {
+                transformOffsetX += 10;
+            }
+            if (abs(transformOffsetY) <= (height/2)) {
+                transformOffsetY += (5) * (-(transformOffsetY - height / 2)/(height / 2));
+            }
+            else {
+                transformOffsetX += 10;
+            }
+
+        }
+        if (key.toLowerCase() === "w" && transformOffsetY < ((height/2))) {
+            transformOffsetY += 5;
+            console.log(transformFactorY-transformFactorYBase);
+            console.log();
+            console.log(transformOffsetY);
+        }
+        if (key.toLowerCase() === "s" && transformOffsetY > -((height/2)+(simResY*(transformFactorY-transformFactorYBase)))) {
+            transformOffsetY -= 5;
+            console.log(transformOffsetY);
+        }
+        if (key.toLowerCase() === "a" && transformOffsetX < (width/2)) {
+            transformOffsetX += 5;
+            console.log(transformOffsetX);
+        }
+        if (key.toLowerCase() === "d" && transformOffsetX > -((width/2)+(simResX*(transformFactorX-transformFactorXBase)))) {
+            transformOffsetX -= 5;
+            console.log(transformOffsetX);
+        }
+        
+    }
 }
 
 
 function keyPressed(event) {
-    if (key.toLowerCase() === "s") {
+    if (key.toLowerCase() === "e") {
         if (speed === 10) {
             speed = 1;
         }
@@ -132,8 +207,8 @@ function loadSimulation() {
 }
 
 
-setInterval(() => {
-    let timeDisplay = document.getElementsByClassName("time-display")[0];
-    let dt = new Date();
-    timeDisplay.textContent = new Date().toJSON().split(".")[0];
-}, 1000);
+//setInterval(() => {
+//    let timeDisplay = document.getElementsByClassName("time-display")[0];
+//    let dt = new Date();
+//    timeDisplay.textContent = new Date().toJSON().split(".")[0];
+//}, 1000);
