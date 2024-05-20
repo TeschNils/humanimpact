@@ -152,7 +152,7 @@ function draw() {
                 transformOffsetY += (5) * (-(transformOffsetY - height / 2)/(height / 2));
             }
             else {
-                transformOffsetX += 10;
+                transformOffsetY += 10;
             }
 
         }
