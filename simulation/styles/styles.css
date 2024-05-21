@@ -2,7 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background-color: #0e1c25;
+    background-color: #141D22;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -19,7 +19,8 @@ html, body {
     gap: 20px;
     justify-content: center;
     align-items: center;
-    background-color: #0e1c25;
+    background-color: #141D22;
+    display: none
 }
 
 .info-box-corner {
@@ -28,8 +29,9 @@ html, body {
     top: 0px;
     height: 50px;
     width: 150px;
-    background-color: #0e1c25;
+    background-color: #141D22;
     clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 100%, 0% 100%);
+    display: none
 }
 
 .active-indicator {
@@ -39,6 +41,7 @@ html, body {
     background-color: rgb(22, 201, 22);
     box-shadow: 0px 0px 20px 5px rgb(22, 201, 22);
     animation: blink-animation 1s infinite alternate;
+    display: none
 }
 
 
@@ -83,7 +86,8 @@ main {
 
 .simulation-infos {
     flex: 1;
-    background-color: rgba(255, 255, 255, 0.055);
+    background-color: rgba(255, 255, 255, 0.00);
+    border: 1px solid #4D9DD2;
 }
 
 .info-header {
@@ -103,7 +107,7 @@ main {
 
 .info-title {
     font-size: 35px;
-    color: #FACB52
+    color: white
 }
 
 
@@ -137,6 +141,7 @@ main {
 
 #simulation-container {
     flex: 4;
+    border: 1px solid #4D9DD2;
 }
 
 canvas {
@@ -150,8 +155,10 @@ canvas {
     gap: 25px;
 }
 
+
 .chart-container {
     flex: 1;
-    background-color: rgba(255, 255, 255, 0.055);
+    background-color: rgba(255, 255, 255, 0.0);
+    border: 1px solid #4D9DD2
 }
 

@@ -12,7 +12,7 @@ class Food {
     constructor(type) {
         this.timeAlive = 0;
         this.type = type; 
-        this.size = 5;
+        this.size = 3;
         this.position = createVector(random(width), random(height));
 
         this.desintegrated = false;
@@ -20,7 +20,7 @@ class Food {
   
     display() {
         if (this.type === FoodType.Plant) {
-            fill(200, 200, 200);
+            fill(58, 242, 121);
         } else if (this.type === FoodType.Rotten) {
             fill(171, 79, 18);
         } else if (this.type === FoodType.Poisoned) {

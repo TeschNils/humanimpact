@@ -34,7 +34,7 @@ function resizeCanvasToParent() {
 
 
 function simulationStep() {
-    background(255, 253, 235);
+    background(10, 19, 24);
 
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
@@ -100,7 +100,6 @@ function draw() {
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
-    filter(INVERT);
 }
 
 

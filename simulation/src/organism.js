@@ -244,30 +244,17 @@ class Organism {
     }
   
     display() {
-        fill(this.color);
-        strokeWeight(1)
-        stroke(100);
-
-        // Draw head
+        fill(color(123, 249, 248));
+        strokeWeight(0);
         ellipse(this.position.x, this.position.y, this.displaySize);
 
-        // Draw mid body
-        this.prevDirection.normalize();
-        let mid = p5.Vector.random2D();
-        mid.x = this.position.x - this.prevDirection.x * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
-        mid.y = this.position.y - this.prevDirection.y * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
-        ellipse(mid.x, mid.y, this.displaySize / 2);
-
-        // Draw lower body
-        this.prevDirection2.normalize();
-        let lower = p5.Vector.random2D();
-        lower.x = mid.x - this.prevDirection2.x * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
-        lower.y = mid.y - this.prevDirection2.y * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
-        ellipse(lower.x, lower.y, this.displaySize / 3);
+        fill(color(176, 254, 254));
+        strokeWeight(0)
+        ellipse(this.position.x, this.position.y, int(this.displaySize*0.666));
 
         // Draw sensors
-        let maxReachLine = this.displaySize * 1.25;
-        let minReachLine = this.displaySize * 0.65;
+        let maxReachLine = this.displaySize * 1.3;
+        let minReachLine = this.displaySize * 0.7;
 
         let reachLineFactor = ((this.sightReach - 45) / (100 - 45)) * (maxReachLine - minReachLine) + minReachLine;
 
@@ -283,9 +270,12 @@ class Organism {
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * this.sightReach, this.position.y + displaySensorRight.y * this.sightReach);
         }
         else {
-            stroke(0, 0, 0, 100)
+            strokeWeight(1);
+            stroke(123, 249, 248);
             line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
+            ellipse(this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor, int(this.displaySize * 0.2));
+            ellipse(this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor, int(this.displaySize * 0.2));
         }
     }
 }

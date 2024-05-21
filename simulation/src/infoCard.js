@@ -18,5 +18,5 @@ function createInfoCard(title, text) {
     parentElement.appendChild(infoCard);
 }
 
-//createInfoCard("Oil leakage pollutes ecosystem!", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.");
-//createInfoCard("Critical CO2 emissions detected.", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.");
+createInfoCard("Oil leakage pollutes ecosystem!", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.");
+createInfoCard("Critical CO2 emissions detected.", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.");
