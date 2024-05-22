@@ -33,8 +33,24 @@ function resizeCanvasToParent() {
 }
 
 
+function drawGrid(cellSize) {
+    stroke(77, 157, 210, 100); // Set the grid line color
+    strokeWeight(1); // Set the grid line weight
+  
+    // Draw vertical lines
+    for (let x = 0; x <= width; x += cellSize) {
+      line(x, 0, x, height);
+    }
+  
+    // Draw horizontal lines
+    for (let y = 0; y <= height; y += cellSize) {
+      line(0, y, width, y);
+    }
+  }
+
+
 function simulationStep() {
-    background(10, 19, 24);
+    background(10, 29, 34);
 
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
@@ -100,6 +116,7 @@ function draw() {
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
+    drawGrid(100);
 }
 
 
