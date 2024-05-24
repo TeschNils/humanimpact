@@ -15,15 +15,18 @@ let transformFactorX = 1;
 let transformFactorY = 1;
 let transformOffsetX = 0;
 let transformOffsetY = 0;
-let transformFactorXBase; 
-let transformFactorYBase;
 let boundryX = 0;
 let boundryY = 0;
+
+
 
 function setup() {
     canvas = createCanvas(0, 0, P2D);
     canvas.parent("simulation-container");
     resizeCanvasToParent();
+
+    canvas.mouseWheel(e =>
+        Controls.zoom(controls).worldZoom(e))
 
     for (let i=0; i<numOrganisms; i++) {
         organisms.push(new Organism());
@@ -39,10 +42,23 @@ function resizeCanvasToParent() {
     let containerWidth = document.getElementById("simulation-container").offsetWidth;
     let containerHeight = document.getElementById("simulation-container").offsetHeight;
     resizeCanvas(containerWidth, containerHeight);
-    transformFactorX = width / simResX;
-    transformFactorY = height / simResY;
-    transformFactorXBase = transformFactorX;
-    transformFactorYBase = transformFactorY;
+
+    simResRelation = simResX / simResY;
+    widthHeightRelation = width / height;
+    
+    if (width < height) {
+        console.log("Portrait mode");
+        transformFactorX = width / simResX;
+        transformFactorY = width / simResY;
+
+        transformOffsetY = -(width - height) / 2;
+    } else {
+        console.log("Landscape mode");
+        transformFactorX = height / simResX;
+        transformFactorY = transformFactorX;
+        transformOffsetX = (width - height) / 2;
+    }
+
 }
 
 
@@ -113,71 +129,16 @@ function simulationStep() {
 function draw() {
     //frameRate(60);
 
+    translate(controls.view.x, controls.view.y);
+    scale(controls.view.zoom)
+
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
     //filter(INVERT);
     let fps = frameRate();
     text(fps, 50, 50);
-    if (keyIsPressed) {
-
-        if (key.toLowerCase() === "+") {
-            transformFactorX += 1/simResX * 10;
-            transformFactorY += 1/simResY * 10;
-            console.log("TransformOffsetX: "+abs(transformOffsetX));
-            console.log("Width: "+width/2);
-            console.log("TransformOffsetY: "+abs(transformOffsetY));
-            console.log("Height: "+height/2);
-            if (abs(transformOffsetX) <= (width/2)) {
-                transformOffsetX -= (5)*(-(transformOffsetX-width/2)/(width/2));
-            }
-            else {
-                transformOffsetX -= 10;
-            }
-            if (abs(transformOffsetY) <= (height/2)) {
-                transformOffsetY -= (5)*(-(transformOffsetY-height/2)/(height/2));
-            }
-            else {
-                transformOffsetY -= 10;
-            }
-        }
-        if (key.toLowerCase() === "-") {
-            transformFactorX -= 1/simResX * 10;
-            transformFactorY -= 1/simResY * 10;
-            if (abs(transformOffsetX) <= (width/2)) {
-                transformOffsetX += (5) * (-(transformOffsetX-width / 2) / (width / 2));
-            }
-            else {
-                transformOffsetX += 10;
-            }
-            if (abs(transformOffsetY) <= (height/2)) {
-                transformOffsetY += (5) * (-(transformOffsetY - height / 2)/(height / 2));
-            }
-            else {
-                transformOffsetY += 10;
-            }
-
-        }
-        if (key.toLowerCase() === "w" && transformOffsetY < ((boundryY))) {
-            transformOffsetY += 5;
-            console.log(transformFactorY-transformFactorYBase);
-            console.log();
-            console.log(transformOffsetY);
-        }
-        if (key.toLowerCase() === "s" && transformOffsetY > -((boundryY)+(simResY*(transformFactorY-transformFactorYBase)))) {
-            transformOffsetY -= 5;
-            console.log(transformOffsetY);
-        }
-        if (key.toLowerCase() === "a" && transformOffsetX < ((boundryX))) {
-            transformOffsetX += 5;
-            console.log(transformOffsetX);
-        }
-        if (key.toLowerCase() === "d" && transformOffsetX > -((boundryX)+(simResX*(transformFactorX-transformFactorXBase)))) {
-            transformOffsetX -= 5;
-            console.log(transformOffsetX);
-        }
-        
-    }
+    
 }
 
 
