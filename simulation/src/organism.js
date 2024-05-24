@@ -62,6 +62,10 @@ class Organism {
         this.prevDirection2 = p5.Vector.random2D();
 
         this.oilCovered = false;
+        this.insideOil = false;
+        this.oilCoveredSpeed = 0.15;
+        this.timeToClean = 500;
+        this.cleanCounter = 0;
     }
 
     energyConsumption() {
@@ -216,7 +220,7 @@ class Organism {
         
         this.currentSpeed = this.speed;
         if (this.oilCovered) {
-            this.currentSpeed = 0.25;
+            this.currentSpeed = this.oilCoveredSpeed;
         }
 
         // Update direction and position
@@ -244,12 +248,20 @@ class Organism {
         
         this.energyConsumption();
         this.timeAlive += 1;
+
+        if (this.oilCovered && !this.insideOil) {
+            this.cleanCounter += 1;
+            if (this.cleanCounter === this.timeToClean) {
+                this.oilCovered = false;
+                this.cleanCounter = 0;
+            }
+        }
     }
   
     display() {
         let mainColor = color(234, 231, 206);
         if (this.oilCovered) {
-            mainColor = color(105, 45, 210)
+            mainColor = color(145, 85, 250)
         }
 
         // Draw sensors
@@ -282,10 +294,10 @@ class Organism {
         fill(mainColor);
         ellipse(this.position.x, this.position.y, this.displaySize);
 
-        //fill(color(255, 255, 255, 200));
-        //strokeWeight(0)
-        //ellipse(this.position.x, this.position.y, int(this.displaySize*0.666));
-
-        
+        // Additional styling when oil covered
+        if (this.oilCovered) {
+            fill(44, 11, 103);
+            ellipse(this.position.x, this.position.y, this.displaySize * 0.75);
+        }
     }
 }

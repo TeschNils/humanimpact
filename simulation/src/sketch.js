@@ -13,8 +13,11 @@ let iteration = 0;
 
 let oilPollution;
 let oilRadius = 450;
-let oilLifetime = 1000;
 let oilPosition;
+
+let co2Pollution;
+let co2Radius = 750;
+let co2Position;
 
 
 function setup() {
@@ -40,15 +43,13 @@ function resizeCanvasToParent() {
 
 
 function drawGrid(cellSize) {
-    stroke(77, 157, 210, 75); // Set the grid line color
-    strokeWeight(1); // Set the grid line weight
+    stroke(77, 157, 210, 50);
+    strokeWeight(1);
   
-    // Draw vertical lines
     for (let x = 0; x <= width; x += cellSize) {
       line(x, 0, x, height);
     }
   
-    // Draw horizontal lines
     for (let y = 0; y <= height; y += cellSize) {
       line(0, y, width, y);
     }
@@ -69,11 +70,23 @@ function simulationStep() {
     }
 
     if (random(0, 1) <= newFoodProbability) {
-        //foods.push(new Food(FoodType.Plant));
+        foods.push(new Food(FoodType.Plant));
     }
 
     if (oilPollution) {
+        oilPollution.update();
         oilPollution.display();
+        if (oilPollution.desintegrated) {
+            oilPollution = null;
+        }
+    }
+
+    if (co2Pollution) {
+        co2Pollution.update();
+        co2Pollution.display();
+        if (co2Pollution.desintegrated) {
+            co2Pollution = null;
+        }
     }
 
     for (let i=0; i<foods.length; i++) {
@@ -81,6 +94,13 @@ function simulationStep() {
 
         if (oilPollution && food.type !== FoodType.Poisoned) {
             if (food.position.dist(oilPollution.position) < oilPollution.size / 2) {
+                foods.splice(i, 1);
+                continue;
+            }
+        }
+
+        if (co2Pollution && food.type !== FoodType.Poisoned) {
+            if (food.position.dist(co2Pollution.position) < co2Pollution.size / 2 && random(0, 1) < 0.001) {
                 food.poisonFood();
             }
         }
@@ -105,9 +125,14 @@ function simulationStep() {
         organism.update();
         organism.display();
 
+        // Handle organism in oil polluted area
         if (oilPollution) {
             if (organism.position.dist(oilPollution.position) < oilPollution.size / 2) {
                 organism.oilCovered = true;
+                organism.insideOil = true;
+            }
+            else {
+                organism.insideOil = false;
             }
         }
 
@@ -124,8 +149,6 @@ function simulationStep() {
             organisms.splice(i, 1);
         }
     }
-
-    
 
     if (iteration % 100 == 0) {
         populationHistory.push(organisms.length);
@@ -159,6 +182,13 @@ function keyPressed(event) {
             random(width - oilRadius / 2),
             random(height - oilRadius / 2),
             oilRadius
+        );
+    }
+    else if (key.toLowerCase() === "2") {
+        co2Pollution = new CO2Pollution(
+            random(width - co2Radius / 2),
+            random(height - co2Radius / 2),
+            co2Radius
         );
     }
 }
