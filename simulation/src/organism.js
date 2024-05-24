@@ -6,7 +6,7 @@ class Organism {
         this.generation = 0;
 
         this.energy = 1.0;
-        this.initialEnergyLoss = 0.00075;
+        this.initialEnergyLoss = 0.0005;
         this.energyLossFactor = 0.00001;
         this.currentEnergyLoss = this.initialEnergyLoss;
 
@@ -182,10 +182,10 @@ class Organism {
                 otherOrganism.isAdult
             ) {
                 
-                let childAmount = 1;
-                if (this.energy > 5.0 && otherOrganism.energy > 5.0) {
+                let childAmount = 3;
+                /*if (this.energy > 5.0 && otherOrganism.energy > 5.0) {
                     childAmount = 2;
-                }
+                }*/
 
                 for (let c=0; c<childAmount; c++) {
                     let child = new Organism();

@@ -4,12 +4,18 @@ let organisms = [];
 let foods = [];
 let numFood = 300;
 let numOrganisms = 300;
-let newFoodProbability = 0.1;
+let newFoodProbability = 0.05;
 
 let populationHistory = [numOrganisms];
 let generationDistribution;
 let speed = 1;
 let iteration = 0;
+
+let oilPollution;
+let oilRadius = 450;
+let oilLifetime = 1000;
+let oilPosition;
+
 
 function setup() {
     canvas = createCanvas(0, 0);
@@ -34,7 +40,7 @@ function resizeCanvasToParent() {
 
 
 function drawGrid(cellSize) {
-    stroke(77, 157, 210, 100); // Set the grid line color
+    stroke(77, 157, 210, 75); // Set the grid line color
     strokeWeight(1); // Set the grid line weight
   
     // Draw vertical lines
@@ -76,6 +82,10 @@ function simulationStep() {
         food.display();
     }
 
+    if (oilPollution) {
+        oilPollution.display();
+    }
+
     generationDistribution = [0];
 
     for (let i=0; i<organisms.length; i++) {
@@ -95,9 +105,9 @@ function simulationStep() {
         generationDistribution[organism.generation] += 1;
         
         if (organism.energy <= 0) {
-            //meat = new Food(FoodType.Meat);
-            //meat.position = organism.position.copy();
-            //foods.push(meat);
+            meat = new Food(FoodType.Meat);
+            meat.position = organism.position.copy();
+            foods.push(meat);
             organisms.splice(i, 1);
         }
     }
@@ -116,7 +126,7 @@ function draw() {
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
-    drawGrid(100);
+    drawGrid(150);
 }
 
 
@@ -128,6 +138,13 @@ function keyPressed(event) {
         else {
             speed = 10;
         }
+    }
+    else if (key.toLowerCase() === "1") {
+        oilPollution = new OilPollution(
+            random(width - oilRadius / 2),
+            random(height - oilRadius / 2),
+            oilRadius
+        );
     }
 }
 

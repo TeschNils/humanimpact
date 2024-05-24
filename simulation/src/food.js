@@ -1,7 +1,7 @@
 
 
 const FoodType = {
-    Plant: 2.0,
+    Plant: 1.75,
     Rotten: -0.5,
     Poisoned: -0.5,
     Meat: 0.0
@@ -27,9 +27,9 @@ class Food {
             fill(58, 242, 121);
             ellipse(this.position.x, this.position.y, int(this.size));
         } else if (this.type === FoodType.Rotten) {
-            fill(171, 79, 18, 100);
+            fill(185, 102, 19, 100);
             ellipse(this.position.x, this.position.y, int(this.size * 2.75));
-            fill(171, 79, 18);
+            fill(185, 102, 19);
             ellipse(this.position.x, this.position.y, int(this.size));
         } else if (this.type === FoodType.Poisoned) {
             fill(95, 191, 69, 100);
