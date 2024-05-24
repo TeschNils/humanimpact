@@ -133,19 +133,9 @@ class Organism {
 
             if (this.visualDebug) {
                 stroke(255, 0, 0)
-                line(
-                    this.sensorLeft.x * transformFactorX + transformOffsetX,
-                    this.sensorLeft.y * transformFactorY + transformOffsetY,
-                    food.position.x * transformFactorX + transformOffsetX, 
-                    food.position.y * transformFactorY + transformOffsetY
-                );
+                line(this.sensorLeft.x, this.sensorLeft.y, food.position.x, food.position.y);
                 stroke(0, 0, 255);
-                line(
-                    this.sensorRight.x * transformFactorX + transformOffsetX,
-                    this.sensorRight.y * transformFactorY + transformOffsetY,
-                    food.position.x * transformFactorX + transformOffsetX,
-                    food.position.y * transformFactorY + transformOffsetY
-                );
+                line(this.sensorRight.x, this.sensorRight.y, food.position.x, food.position.y);
             }
             
 
@@ -265,33 +255,21 @@ class Organism {
         stroke(100);
 
         // Draw head
-        ellipse(
-            this.position.x * transformFactorX + transformOffsetX,
-            this.position.y * transformFactorY + transformOffsetY,
-            this.displaySize * transformFactorX
-        );
+        ellipse(this.position.x, this.position.y, this.displaySize);
 
         // Draw mid body
         this.prevDirection.normalize();
         let mid = p5.Vector.random2D();
         mid.x = this.position.x - this.prevDirection.x * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
         mid.y = this.position.y - this.prevDirection.y * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
-        ellipse(
-            mid.x * transformFactorX + transformOffsetX,
-            mid.y*transformFactorY + transformOffsetY,
-            this.displaySize*transformFactorX / 2
-        );
+        ellipse(mid.x, mid.y, this.displaySize / 2);
 
         // Draw lower body
         this.prevDirection2.normalize();
         let lower = p5.Vector.random2D();
         lower.x = mid.x - this.prevDirection2.x * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
         lower.y = mid.y - this.prevDirection2.y * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
-        ellipse(
-            lower.x*transformFactorX + transformOffsetX,
-            lower.y*transformFactorY + transformOffsetY,
-            this.displaySize*transformFactorX / 3
-        );
+        ellipse(lower.x, lower.y, this.displaySize / 3);
 
         // Draw sensors
         let maxReachLine = this.displaySize * 1.25;
@@ -305,39 +283,15 @@ class Organism {
         if (this.visualDebug) {
             noFill();
             stroke(0, 0, 0, 50);
-            circle(
-                this.position.x * transformFactorX + transformOffsetX,
-                this.position.y * transformFactorY + transformOffsetY,
-                this.sightReach * transformFactorX * 2
-            );
+            circle(this.position.x, this.position.y, this.sightReach * 2);
             stroke(0, 0, 0, 100)
-            line(
-                this.position.x * transformFactorX + transformOffsetX,
-                this.position.y * transformFactorY + transformOffsetY,
-                this.position.x * transformFactorX + displaySensorLeft.x * transformFactorX * this.sightReach + transformOffsetX,
-                this.position.y * transformFactorY + displaySensorLeft.y * transformFactorY * this.sightReach + transformOffsetY
-            );
-            line(
-                this.position.x * transformFactorX + transformOffsetX,
-                this.position.y * transformFactorY + transformOffsetY,
-                this.position.x * transformFactorX + displaySensorRight.x * transformFactorX * this.sightReach + transformOffsetX,
-                this.position.y * transformFactorY + displaySensorRight.y * transformFactorY * this.sightReach + transformOffsetY
-            );
+            line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * this.sightReach, this.position.y + displaySensorLeft.y * this.sightReach);
+            line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * this.sightReach, this.position.y + displaySensorRight.y * this.sightReach);
         }
         else {
             stroke(0, 0, 0, 100)
-            line(
-                this.position.x * transformFactorX + transformOffsetX,
-                this.position.y * transformFactorY + transformOffsetY,
-                this.position.x * transformFactorX + displaySensorLeft.x*transformFactorX * reachLineFactor + transformOffsetX,
-                this.position.y* transformFactorY + displaySensorLeft.y* transformFactorY * reachLineFactor + transformOffsetY
-            );
-            line(
-                this.position.x * transformFactorX + transformOffsetX,
-                this.position.y * transformFactorY + transformOffsetY,
-                this.position.x * transformFactorX + displaySensorRight.x*transformFactorX * reachLineFactor + transformOffsetX,
-                this.position.y* transformFactorY + displaySensorRight.y* transformFactorY * reachLineFactor + transformOffsetY
-            );
+            line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
+            line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
         }
     }
 }

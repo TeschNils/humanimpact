@@ -31,11 +31,7 @@ class Food {
         }
 
         noStroke();
-        ellipse(
-            this.position.x * transformFactorX + transformOffsetX,
-            this.position.y*transformFactorY + transformOffsetY,
-            int(this.size)
-        );
+        ellipse(this.position.x, this.position.y, int(this.size));
     }
 
     update() {

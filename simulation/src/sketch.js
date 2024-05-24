@@ -11,11 +11,8 @@ let iteration = 0;
 
 const simResX = 650;
 const simResY = 400;
-let transformFactorX = 1;
-let transformFactorY = 1;
-let transformOffsetX = 0;
-let transformOffsetY = 0;
 
+let transformFactor = 0;
 
 
 function setup() {
@@ -26,11 +23,11 @@ function setup() {
     canvas.mouseWheel(e =>
         Controls.zoom(controls).worldZoom(e))
 
-    for (let i=0; i<numOrganisms; i++) {
+    for (let i = 0; i < numOrganisms; i++) {
         organisms.push(new Organism());
     }
 
-    for (let i=0; i<numFood; i++) {
+    for (let i = 0; i < numFood; i++) {
         foods.push(new Food(FoodType.Plant));
     }
 }
@@ -41,27 +38,13 @@ function resizeCanvasToParent() {
     let containerHeight = document.getElementById("simulation-container").offsetHeight;
     resizeCanvas(containerWidth, containerHeight);
 
-    simResRelation = simResX / simResY;
-    widthHeightRelation = width / height;
-    if (simResRelation > widthHeightRelation) {
-        transformFactorX = width / simResX;
-        transformFactorY = transformFactorX;
-        transformOffsetX = 0;
-        transformOffsetY = (height/2 - (simResY*transformFactorY)/2); 
-    } else {
-        transformFactorY = height / simResY;
-        transformFactorX = transformFactorY;
-        transformOffsetY = 0;
-        transformOffsetX = (width/2 - (simResX*transformFactorX)/2) ;
-    }
-
 }
 
 
 function simulationStep() {
     background(255, 253, 235);
 
-    rect(0+transformOffsetX, 0+transformOffsetY, simResX*transformFactorX, simResY*transformFactorY);
+    rect(0, 0, simResX, simResY);
 
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
@@ -77,7 +60,7 @@ function simulationStep() {
         foods.push(new Food(FoodType.Plant));
     }
 
-    for (let i=0; i<foods.length; i++) {
+    for (let i = 0; i < foods.length; i++) {
         food = foods[i];
         if (food.desintegrated) {
             foods.splice(i, 1);
@@ -89,10 +72,10 @@ function simulationStep() {
 
     generationDistribution = [0];
 
-    for (let i=0; i<organisms.length; i++) {
+    for (let i = 0; i < organisms.length; i++) {
         let organism = organisms[i];
         organism.observe(foods);
-        
+
         organism.mate(organisms);
 
         organism.move(i);
@@ -104,7 +87,7 @@ function simulationStep() {
             generationDistribution.push(0);
         }
         generationDistribution[organism.generation] += 1;
-        
+
         if (organism.energy <= 0) {
             //meat = new Food(FoodType.Meat);
             //meat.position = organism.position.copy();
@@ -121,20 +104,42 @@ function simulationStep() {
     iteration += 1;
 }
 
+function initialScaling() {
+    simResRelation = simResX / simResY;
+    widthHeightRelation = width / height;
+    let transformOffsetXN;
+    let transformOffsetYN;
+
+    if (simResRelation > widthHeightRelation) {
+        transformFactor = height / simResY;
+        transformOffsetXN = 0;
+        transformOffsetYN = (height / 2 - (simResY * transformFactor) / 2);
+    } else {
+        transformFactor = width / simResX;
+        transformOffsetYN = 0;
+        transformOffsetXN = (width / 2 - (simResX * transformFactor) / 2);
+    }
+
+    scale(transformFactor);
+    translate(transformOffsetXN, transformOffsetYN);
+}
+
 
 function draw() {
-    //frameRate(60);
-
     translate(controls.view.x, controls.view.y);
     scale(controls.view.zoom)
 
-    for (let i=0; i<speed; i++) {
+    frameRate(60);
+
+    initialScaling();
+
+    for (let i = 0; i < speed; i++) {
         simulationStep();
     }
     //filter(INVERT);
     let fps = frameRate();
     text(fps, 50, 50);
-    
+
 }
 
 
@@ -148,15 +153,6 @@ function keyPressed(event) {
         }
     }
 }
-
-addEventListener("resize", () => {
-    width = 0;
-    height = 0;
-    console.log(document.getElementById("simulation-container").offsetWidth);
-    console.log(document.getElementById("simulation-container").offsetHeight);
-    resizeCanvasToParent();
-    plotCharts();
-});
 
 
 function plotCharts() {
