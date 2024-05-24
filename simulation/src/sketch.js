@@ -9,14 +9,12 @@ let generationDistribution;
 let speed = 1;
 let iteration = 0;
 
-const simResX = 500;
-const simResY = 500;
+const simResX = 650;
+const simResY = 400;
 let transformFactorX = 1;
 let transformFactorY = 1;
 let transformOffsetX = 0;
 let transformOffsetY = 0;
-let boundryX = 0;
-let boundryY = 0;
 
 
 
@@ -45,18 +43,16 @@ function resizeCanvasToParent() {
 
     simResRelation = simResX / simResY;
     widthHeightRelation = width / height;
-    
-    if (width < height) {
-        console.log("Portrait mode");
+    if (simResRelation > widthHeightRelation) {
         transformFactorX = width / simResX;
-        transformFactorY = width / simResY;
-
-        transformOffsetY = -(width - height) / 2;
-    } else {
-        console.log("Landscape mode");
-        transformFactorX = height / simResX;
         transformFactorY = transformFactorX;
-        transformOffsetX = (width - height) / 2;
+        transformOffsetX = 0;
+        transformOffsetY = (height/2 - (simResY*transformFactorY)/2); 
+    } else {
+        transformFactorY = height / simResY;
+        transformFactorX = transformFactorY;
+        transformOffsetY = 0;
+        transformOffsetX = (width/2 - (simResX*transformFactorX)/2) ;
     }
 
 }
