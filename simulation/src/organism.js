@@ -60,6 +60,8 @@ class Organism {
 
         this.prevDirection = p5.Vector.random2D();
         this.prevDirection2 = p5.Vector.random2D();
+
+        this.oilCovered = false;
     }
 
     energyConsumption() {
@@ -95,7 +97,7 @@ class Organism {
             let distanceToFood = this.position.dist(food.position);
 
             if (distanceToFood < (this.displaySize / 2 + food.size / 2)) {
-                this.energy += food.type;
+                this.energy += food.energyWorth;
                 foods.splice(i, 1);
                 break;
             }
@@ -113,34 +115,33 @@ class Organism {
             }
         }
 
-        let foodDistance1 = 0.0;//random(0.4, 0.6);
-        let foodDistance2 = 0.0;//random(0.4, 0.6);
-        let foodType = 0.0;//random(0.4, 0.6);
+        let foodDistance1 = 0.0;
+        let foodDistance2 = 0.0;
+        let foodType = 0.0;
         if (foodFound) {
             let food = foods[closestFoodIndex];
-
-            if (this.visualDebug) {
-                fill(0, 0, 255);
-                circle(food.position.x, food.position.y, 4);
-            }
-
             foodDistance1 = this.sensorLeft.dist(food.position) / largestSensorDistance;
             foodDistance2 = this.sensorRight.dist(food.position) / largestSensorDistance;
 
             if (this.visualDebug) {
+                fill(0, 0, 255);
+                circle(food.position.x, food.position.y, 4)
+
                 stroke(255, 0, 0)
                 line(this.sensorLeft.x, this.sensorLeft.y, food.position.x, food.position.y);
                 stroke(0, 0, 255);
                 line(this.sensorRight.x, this.sensorRight.y, food.position.x, food.position.y);
             }
             
-
-            // food type encodings: Plant -> 1.0, Rotten -> 0.0;
-            if (food.type == FoodType.Plant) {
+            // Create numeric representation of food types
+            if (food.type === FoodType.Plant) {
                 foodType = 1.0;
             }
-            else if (food.foodType == FoodType.Rotten || food.foodType == FoodType.Poisoned) {
-                foodType = 0.5;
+            else if (food.type === FoodType.Meat) {
+                foodType = 0.5
+            }
+            else if (food.foodType === FoodType.Rotten || food.foodType === FoodType.Poisoned) {
+                foodType = 0.1;
             }
         }        
 
@@ -182,10 +183,7 @@ class Organism {
                 otherOrganism.isAdult
             ) {
                 
-                let childAmount = 3;
-                /*if (this.energy > 5.0 && otherOrganism.energy > 5.0) {
-                    childAmount = 2;
-                }*/
+                let childAmount = random([1, 2, 3]);
 
                 for (let c=0; c<childAmount; c++) {
                     let child = new Organism();
@@ -216,9 +214,14 @@ class Organism {
         this.prevDirection2 = this.prevDirection.copy();
         this.prevDirection = this.direction.copy();
         
+        this.currentSpeed = this.speed;
+        if (this.oilCovered) {
+            this.currentSpeed = 0.25;
+        }
+
         // Update direction and position
         this.direction = this.direction.rotate(this.turnAngle).normalize();
-        this.position = this.position.add(this.direction.mult(this.speed));
+        this.position = this.position.add(this.direction.mult(this.currentSpeed));
         
         // Handle wall collisions
         if (this.position.x < this.size / 2 || this.position.x > width - this.size / 2) {
@@ -244,13 +247,10 @@ class Organism {
     }
   
     display() {
-        fill(color(123, 249, 248));
-        strokeWeight(0);
-        ellipse(this.position.x, this.position.y, this.displaySize);
-
-        fill(color(176, 254, 254));
-        strokeWeight(0)
-        ellipse(this.position.x, this.position.y, int(this.displaySize*0.666));
+        let mainColor = color(234, 231, 206);
+        if (this.oilCovered) {
+            mainColor = color(105, 45, 210)
+        }
 
         // Draw sensors
         let maxReachLine = this.displaySize * 1.3;
@@ -271,11 +271,21 @@ class Organism {
         }
         else {
             strokeWeight(1);
-            stroke(123, 249, 248);
+            stroke(mainColor);
             line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
             ellipse(this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor, int(this.displaySize * 0.2));
             ellipse(this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor, int(this.displaySize * 0.2));
         }
+
+        strokeWeight(0);
+        fill(mainColor);
+        ellipse(this.position.x, this.position.y, this.displaySize);
+
+        //fill(color(255, 255, 255, 200));
+        //strokeWeight(0)
+        //ellipse(this.position.x, this.position.y, int(this.displaySize*0.666));
+
+        
     }
 }

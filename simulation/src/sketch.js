@@ -2,8 +2,8 @@
 
 let organisms = [];
 let foods = [];
-let numFood = 300;
-let numOrganisms = 300;
+let numFood = 150;
+let numOrganisms = 200;
 let newFoodProbability = 0.05;
 
 let populationHistory = [numOrganisms];
@@ -69,21 +69,28 @@ function simulationStep() {
     }
 
     if (random(0, 1) <= newFoodProbability) {
-        foods.push(new Food(FoodType.Plant));
+        //foods.push(new Food(FoodType.Plant));
+    }
+
+    if (oilPollution) {
+        oilPollution.display();
     }
 
     for (let i=0; i<foods.length; i++) {
-        food = foods[i];
+        let food = foods[i];
+
+        if (oilPollution && food.type !== FoodType.Poisoned) {
+            if (food.position.dist(oilPollution.position) < oilPollution.size / 2) {
+                food.poisonFood();
+            }
+        }
+
         if (food.desintegrated) {
             foods.splice(i, 1);
             continue;
         }
         food.update();
         food.display();
-    }
-
-    if (oilPollution) {
-        oilPollution.display();
     }
 
     generationDistribution = [0];
@@ -98,6 +105,12 @@ function simulationStep() {
         organism.update();
         organism.display();
 
+        if (oilPollution) {
+            if (organism.position.dist(oilPollution.position) < oilPollution.size / 2) {
+                organism.oilCovered = true;
+            }
+        }
+
         // Count generation distribution
         if (organism.generation + 1 > generationDistribution.length) {
             generationDistribution.push(0);
@@ -105,12 +118,14 @@ function simulationStep() {
         generationDistribution[organism.generation] += 1;
         
         if (organism.energy <= 0) {
-            meat = new Food(FoodType.Meat);
+            let meat = new Food(FoodType.Meat);
             meat.position = organism.position.copy();
             foods.push(meat);
             organisms.splice(i, 1);
         }
     }
+
+    
 
     if (iteration % 100 == 0) {
         populationHistory.push(organisms.length);
@@ -167,6 +182,5 @@ function loadSimulation() {
 
 setInterval(() => {
     let timeDisplay = document.getElementsByClassName("time-display")[0];
-    let dt = new Date();
     timeDisplay.textContent = new Date().toJSON().split(".")[0];
 }, 1000);

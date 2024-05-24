@@ -1,14 +1,16 @@
 
 
 class OilPollution {
-    constructor(x, y, radius) {
+    constructor(x, y, size) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
+        this.position = new p5.Vector(x + size / 2, y + size / 2);
+        this.size = size;
         this.oilImage = loadImage("./assets/oil.svg");
     }
 
     display() {
-        image(this.oilImage, this.x, this.y, this.radius, this.radius);
+        fill(255, 0, 0);
+        image(this.oilImage, this.x, this.y, this.size, this.size);
     }
 }
