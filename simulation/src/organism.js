@@ -164,7 +164,10 @@ class Organism {
             this.brain.inheritBrain(fatherOrganism.brain);
         }
 
-        this.neatBrain.crossoverAndMutate(motherOrganism.neatBrain, fatherOrganism.neatBrain);
+        this.neatBrain.crossoverAndMutate(
+            motherOrganism.neatBrain, fatherOrganism.neatBrain, 0.1, 0.1,
+            (motherOrganism.timeAlive >= fatherOrganism.timeAlive ? 1 : 2)
+        );
     }
 
     mate(organisms) {
