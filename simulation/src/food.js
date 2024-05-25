@@ -28,7 +28,7 @@ class Food {
     constructor(type) {
         this.timeAlive = 0;
         this.type = type; 
-        this.position = new p5.Vector(random(width), random(height));
+        this.position = new p5.Vector(random(simResX), random(simResY));
 
         this.desintegrated = false;
 

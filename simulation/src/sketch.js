@@ -1,5 +1,3 @@
-
-
 let organisms = [];
 let foods = [];
 let numFood = 150;
@@ -19,17 +17,25 @@ let co2Pollution;
 let co2Radius = 750;
 let co2Position;
 
+const simResX = 1200;
+const simResY = 1200;
+
+let transformFactor = 0;
+
 
 function setup() {
-    canvas = createCanvas(0, 0);
+    canvas = createCanvas(0, 0, P2D);
     canvas.parent("simulation-container");
     resizeCanvasToParent();
 
-    for (let i=0; i<numOrganisms; i++) {
+    canvas.mouseWheel(e =>
+        Controls.zoom(controls).worldZoom(e))
+
+    for (let i = 0; i < numOrganisms; i++) {
         organisms.push(new Organism());
     }
 
-    for (let i=0; i<numFood; i++) {
+    for (let i = 0; i < numFood; i++) {
         foods.push(new Food(FoodType.Plant));
     }
 }
@@ -39,6 +45,7 @@ function resizeCanvasToParent() {
     let containerWidth = document.getElementById("simulation-container").offsetWidth;
     let containerHeight = document.getElementById("simulation-container").offsetHeight;
     resizeCanvas(containerWidth, containerHeight);
+
 }
 
 
@@ -115,10 +122,10 @@ function simulationStep() {
 
     generationDistribution = [0];
 
-    for (let i=0; i<organisms.length; i++) {
+    for (let i = 0; i < organisms.length; i++) {
         let organism = organisms[i];
         organism.observe(foods);
-        
+
         organism.mate(organisms);
 
         organism.move(i);
@@ -141,7 +148,7 @@ function simulationStep() {
             generationDistribution.push(0);
         }
         generationDistribution[organism.generation] += 1;
-        
+
         if (organism.energy <= 0) {
             let meat = new Food(FoodType.Meat);
             meat.position = organism.position.copy();
@@ -158,18 +165,48 @@ function simulationStep() {
     iteration += 1;
 }
 
+function initialScaling() {
+    simResRelation = simResX / simResY;
+    widthHeightRelation = width / height;
+    let transformOffsetXN;
+    let transformOffsetYN;
+
+    if (simResRelation > widthHeightRelation) {
+        transformFactor = height / simResY;
+        transformOffsetXN = 0;
+        transformOffsetYN = (height / 2 - (simResY * transformFactor) / 2);
+    } else {
+        transformFactor = width / simResX;
+        transformOffsetYN = 0;
+        transformOffsetXN = (width / 2 - (simResX * transformFactor) / 2);
+    }
+
+    scale(transformFactor);
+    translate(transformOffsetXN, transformOffsetYN);
+}
+
 
 function draw() {
-    frameRate(45);
-    for (let i=0; i<speed; i++) {
+    translate(controls.view.x, controls.view.y);
+    scale(controls.view.zoom)
+
+    frameRate(60);
+
+    initialScaling();
+
+    for (let i = 0; i < speed; i++) {
         simulationStep();
     }
-    drawGrid(150);
+    //drawGrid(150);
+
+    let fps = frameRate();
+    text(fps, 50, 50);
+
 }
 
 
 function keyPressed(event) {
-    if (key.toLowerCase() === "s") {
+    if (key.toLowerCase() === "e") {
         if (speed === 10) {
             speed = 1;
         }
@@ -179,15 +216,15 @@ function keyPressed(event) {
     }
     else if (key.toLowerCase() === "1") {
         oilPollution = new OilPollution(
-            random(width - oilRadius / 2),
-            random(height - oilRadius / 2),
+            random(controls.viewPos.x - oilRadius / 2),
+            random(controls.viewPos.y - oilRadius / 2),
             oilRadius
         );
     }
     else if (key.toLowerCase() === "2") {
         co2Pollution = new CO2Pollution(
-            random(width - co2Radius / 2),
-            random(height - co2Radius / 2),
+            random(controls.viewPos.x - co2Radius / 2),
+            random(controls.viewPos.y - co2Radius / 2),
             co2Radius
         );
     }
