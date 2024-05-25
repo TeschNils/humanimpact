@@ -51,12 +51,6 @@ class Controls {
     }
 
     static zoom(controls) {
-        // function calcPos(x, y, zoom) {
-        //   const newX = width - (width * zoom - x);
-        //   const newY = height - (height * zoom - y);
-        //   return {x: newX, y: newY}
-        // }
-
         function worldZoom(e) {
             const { x, y, deltaY } = e;
             const direction = deltaY > 0 ? -1 : 1;

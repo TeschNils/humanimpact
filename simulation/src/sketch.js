@@ -171,8 +171,8 @@ function loadSimulation() {
 }
 
 
-//setInterval(() => {
-//    let timeDisplay = document.getElementsByClassName("time-display")[0];
-//    let dt = new Date();
-//    timeDisplay.textContent = new Date().toJSON().split(".")[0];
-//}, 1000);
+setInterval(() => {
+    let timeDisplay = document.getElementsByClassName("time-display")[0];
+    let dt = new Date();
+    timeDisplay.textContent = new Date().toJSON().split(".")[0];
+}, 1000);
