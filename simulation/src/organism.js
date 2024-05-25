@@ -7,7 +7,7 @@ class Organism {
 
         this.energy = 1.0;
         this.initialEnergyLoss = 0.00075;
-        this.energyLossFactor = 0.00001;
+        this.energyLossFactor = 0.0001;
         this.currentEnergyLoss = this.initialEnergyLoss;
 
         this.timeAlive = 0;
@@ -55,7 +55,7 @@ class Organism {
         this.sensorLeft = p5.Vector.random2D();
         this.sensorRight = p5.Vector.random2D();
 
-        this.position = createVector(random(width), random(height));
+        this.position = createVector(random(simResX), random(simResY));
         this.direction = p5.Vector.random2D();
 
         this.prevDirection = p5.Vector.random2D();
@@ -121,7 +121,11 @@ class Organism {
 
             if (this.visualDebug) {
                 fill(0, 0, 255);
-                circle(food.position.x, food.position.y, 4);
+                circle(
+                    food.position.x * this.transformFactorX + transformOffsetX,
+                    food.position.y * this.transformFactorY + transformOffsetY,
+                    4
+                );
             }
 
             foodDistance1 = this.sensorLeft.dist(food.position) / largestSensorDistance;
@@ -221,11 +225,11 @@ class Organism {
         this.position = this.position.add(this.direction.mult(this.speed));
         
         // Handle wall collisions
-        if (this.position.x < this.size / 2 || this.position.x > width - this.size / 2) {
+        if (this.position.x < this.size / 2 || this.position.x > simResX - this.size / 2) {
             this.direction.x *= -1;
             this.energy -= this.wallDamage;
         }
-        if (this.position.y < this.size / 2 || this.position.y > height - this.size / 2) {
+        if (this.position.y < this.size / 2 || this.position.y > simResY - this.size / 2) {
             this.direction.y *= -1;
             this.energy -= this.wallDamage;
         }
@@ -244,6 +248,8 @@ class Organism {
     }
   
     display() {
+
+
         fill(this.color);
         strokeWeight(1)
         stroke(100);

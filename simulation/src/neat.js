@@ -187,4 +187,4 @@ class NEATNetwork {
 // Example usage:
 let network = new NEATNetwork(2, 1); // Input size: 2, Output size: 1
 let output = network.feedForward([0.5, 0.7]);
-console.log("Output:", output);
+//console.log("Output:", output);

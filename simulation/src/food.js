@@ -13,7 +13,7 @@ class Food {
         this.timeAlive = 0;
         this.type = type; 
         this.size = 5;
-        this.position = createVector(random(width), random(height));
+        this.position = createVector(random(simResX), random(simResY));
 
         this.desintegrated = false;
     }
