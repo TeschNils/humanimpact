@@ -2,8 +2,8 @@
 
 let organisms = [];
 let foods = [];
-let numFood = 150;
-let numOrganisms = 200;
+let numFood = 300;
+let numOrganisms = 500;
 let newFoodProbability = 0.05;
 
 let populationHistory = [numOrganisms];
@@ -18,6 +18,9 @@ let oilPosition;
 let co2Pollution;
 let co2Radius = 750;
 let co2Position;
+
+let showOrganismInfo = false;
+let organismInfoIndex = 0;
 
 
 function setup() {
@@ -113,7 +116,7 @@ function simulationStep() {
         food.display();
     }
 
-    generationDistribution = [0];
+    generationDistribution = [];
 
     for (let i=0; i<organisms.length; i++) {
         let organism = organisms[i];
@@ -123,7 +126,7 @@ function simulationStep() {
 
         organism.move(i);
         organism.update();
-        organism.display();
+        organism.display(i);
 
         // Handle organism in oil polluted area
         if (oilPollution) {
@@ -136,10 +139,11 @@ function simulationStep() {
             }
         }
 
-        // Count generation distribution
-        if (organism.generation + 1 > generationDistribution.length) {
+        while (organism.generation >= generationDistribution.length) {
             generationDistribution.push(0);
         }
+
+        // Increment generation count
         generationDistribution[organism.generation] += 1;
         
         if (organism.energy <= 0) {
@@ -160,11 +164,26 @@ function simulationStep() {
 
 
 function draw() {
-    frameRate(45);
+    //frameRate(45);
     for (let i=0; i<speed; i++) {
         simulationStep();
     }
     drawGrid(150);
+}
+
+
+function mouseClicked() {
+    let mousePosition = createVector(mouseX, mouseY);
+
+    for (let i=0; i<organisms.length; i++) {
+        if (mousePosition.dist(organisms[i].position) <= organisms[i].displaySize / 2) {
+            showOrganismInfo = true;
+            organismInfoIndex = i;
+            
+            showOrganismInfoBox(organisms[i], i);
+            return;
+        }
+    }
 }
 
 
