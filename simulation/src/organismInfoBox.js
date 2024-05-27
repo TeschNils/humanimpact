@@ -1,4 +1,10 @@
 function showOrganismInfoBox(organism, i) {
+
+    const previousInfoBoxes = document.getElementsByClassName("organism-box");
+    if (previousInfoBoxes.length > 0) {
+        previousInfoBoxes[0].parentNode.removeChild(previousInfoBoxes[0]);
+    } 
+
     // Create the container box
     const box = document.createElement("div");
     box.className = "organism-box";
@@ -8,6 +14,15 @@ function showOrganismInfoBox(organism, i) {
     organismTitle.innerText = `Organism #${i}`;
     box.appendChild(organismTitle);
     
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("close-organism-box");
+    closeButton.innerText = "x";
+    box.appendChild(closeButton);
+
+    closeButton.addEventListener("click", () => {
+        box.parentNode.removeChild(box);
+    });
+
     // Create the table for stats and genes
     const table = document.createElement("table");
     table.className = "info-table";
@@ -77,7 +92,6 @@ function showOrganismInfoBox(organism, i) {
         row.appendChild(sliderContainer);
         table.appendChild(row);
     }
-
     box.appendChild(table);
 
     // Append the box to the body or any specific container
