@@ -17,8 +17,9 @@ let co2Pollution;
 let co2Radius = 750;
 let co2Position;
 
-const simResX = 1000;
-const simResY = 1000;
+let simResX = 6000;
+let simResY = 6000;
+const fillCanvas = false;
 
 let transformFactor = 0;
 let showOrganismInfo = false;
@@ -46,8 +47,13 @@ function setup() {
 function resizeCanvasToParent() {
     let containerWidth = document.getElementById("simulation-container").offsetWidth;
     let containerHeight = document.getElementById("simulation-container").offsetHeight;
-    resizeCanvas(containerWidth, containerHeight);
 
+    if (fillCanvas) {
+        simResX = containerWidth;
+        simResY = containerHeight;
+    }
+
+    resizeCanvas(containerWidth, containerHeight);
 }
 
 
