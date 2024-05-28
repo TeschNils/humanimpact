@@ -1,7 +1,7 @@
 let organisms = [];
 let foods = [];
-let numFood = 150;
-let numOrganisms = 200;
+let numFood = 300;
+let numOrganisms = 500;
 let newFoodProbability = 0.05;
 
 let populationHistory = [numOrganisms];
@@ -21,6 +21,8 @@ const simResX = 1000;
 const simResY = 1000;
 
 let transformFactor = 0;
+let showOrganismInfo = false;
+let organismInfoIndex = 0;
 
 
 function setup() {
@@ -120,7 +122,7 @@ function simulationStep() {
         food.display();
     }
 
-    generationDistribution = [0];
+    generationDistribution = [];
 
     for (let i = 0; i < organisms.length; i++) {
         let organism = organisms[i];
@@ -130,7 +132,7 @@ function simulationStep() {
 
         organism.move(i);
         organism.update();
-        organism.display();
+        organism.display(i);
 
         // Handle organism in oil polluted area
         if (oilPollution) {
@@ -143,10 +145,11 @@ function simulationStep() {
             }
         }
 
-        // Count generation distribution
-        if (organism.generation + 1 > generationDistribution.length) {
+        while (organism.generation >= generationDistribution.length) {
             generationDistribution.push(0);
         }
+
+        // Increment generation count
         generationDistribution[organism.generation] += 1;
 
         if (organism.energy <= 0) {
@@ -203,6 +206,20 @@ function draw() {
 }
 
 
+function mouseClicked(mousePosition) {
+
+    for (let i=0; i<organisms.length; i++) {
+        if (mousePosition.dist(organisms[i].position) <= organisms[i].displaySize / 2) {
+            showOrganismInfo = true;
+            organismInfoIndex = i;
+            
+            showOrganismInfoBox(organisms[i], i);
+            return;
+        }
+    }
+}
+
+
 function keyPressed(event) {
     if (key.toLowerCase() === "e") {
         if (speed === 10) {
@@ -214,15 +231,27 @@ function keyPressed(event) {
     }
     else if (key.toLowerCase() === "1") {
         oilPollution = new OilPollution(
-            random(controls.viewPos.x - oilRadius / 2),
-            random(controls.viewPos.y - oilRadius / 2),
+            random(
+                -(controls.view.x)/controls.view.zoom/transformFactor,
+                -(controls.view.x-width)/controls.view.zoom/transformFactor,
+            ),
+            random(
+                -(controls.view.y)/controls.view.zoom/transformFactor,
+                -(controls.view.y-height)/controls.view.zoom/transformFactor,
+            ),
             oilRadius
         );
     }
     else if (key.toLowerCase() === "2") {
         co2Pollution = new CO2Pollution(
-            random(controls.viewPos.x - co2Radius / 2),
-            random(controls.viewPos.y - co2Radius / 2),
+            random(
+                -(controls.view.x)/controls.view.zoom/transformFactor,
+                -(controls.view.x-width)/controls.view.zoom/transformFactor,
+            ),
+            random(
+                -(controls.view.y)/controls.view.zoom/transformFactor,
+                -(controls.view.y-height)/controls.view.zoom/transformFactor,
+            ),
             co2Radius
         );
     }

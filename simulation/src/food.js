@@ -3,7 +3,7 @@
 const FoodType = {
     Plant: {
         minEnergy: 1.0,
-        maxEnergy: 1.75,
+        maxEnergy: 3.0,
         color: [157, 206, 54]
     },
     Rotten: {
@@ -17,8 +17,8 @@ const FoodType = {
         color: [0, 255, 194]
     },
     Meat: {
-        minEnergy: 0.5,
-        maxEnergy: 0.5,
+        minEnergy: 1.5,
+        maxEnergy: 3.0,
         color: [240, 105, 105]
     }
 };
@@ -43,16 +43,12 @@ class Food {
         
         if (this.type === FoodType.Plant) {
             this.size = random(this.foodSizeRange[0], this.foodSizeRange[1]);
-            this.energyWorth = this.mapIntoRange(this.foodSizeRange, [FoodType.Plant.minEnergy, FoodType.Plant.maxEnergy], this.size);
+            this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Plant.minEnergy, FoodType.Plant.maxEnergy]);
         }
         else if (this.type === FoodType.Meat) {
-            this.size = 5;
-            this.energyWorth = 0.5
+            this.size = random(this.foodSizeRange[0], this.foodSizeRange[1]);
+            this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Plant.minEnergy, FoodType.Plant.maxEnergy]);
         }
-    }
-
-    mapIntoRange(originalRange, newRange, value) {
-        return ((value - originalRange[0])/(originalRange[1] - originalRange[0])) * (newRange[1] - newRange[0]) + newRange[0]
     }
   
     display() {
@@ -65,13 +61,13 @@ class Food {
 
     rotFood() {
         this.type = FoodType.Rotten;
-        this.energyWorth = this.mapIntoRange(this.foodSizeRange, [FoodType.Rotten.minEnergy, FoodType.Rotten.maxEnergy], this.size);
+        this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Rotten.minEnergy, FoodType.Rotten.maxEnergy]);
         this.foodColor = color(FoodType.Rotten.color);
     }
 
     poisonFood() {
         this.type = FoodType.Rotten;
-        this.energyWorth = this.mapIntoRange(this.foodSizeRange, [FoodType.Poisoned.minEnergy, FoodType.Poisoned.maxEnergy], this.size);
+        this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Poisoned.minEnergy, FoodType.Poisoned.maxEnergy]);
         this.foodColor = color(FoodType.Poisoned.color);
     }
 

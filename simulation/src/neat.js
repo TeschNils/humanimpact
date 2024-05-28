@@ -98,10 +98,12 @@ class NEATNetwork {
         return outputValues;
     }
 
-    crossoverAndMutate(parent1, parent2, mutationChance, mutationFactor, fittestParent) {
+    crossoverAndMutate(parent1, parent2, fittestParent) {
         // fittestParent = 1 -> parent1
         // fittestParent = 2 -> parent2
 
+        const mutationChance = 0.075;
+        const mutationFactor = 0.075;
 
         // Assume parent1 and parent2 are instances of NEATNetwork
         const inputSize = parent1.inputSize;
@@ -166,7 +168,7 @@ class NEATNetwork {
         }
 
         // Mutate nodes (add new connections or nodes)
-        if (random() < 0.05) {
+        if (random() < mutationChance) {
             // Add a new connection with a small probability
             let fromNode = childGenome.nodes[Math.floor(random() * childGenome.nodes.length)];
             let toNode = childGenome.nodes[Math.floor(random() * childGenome.nodes.length)];
@@ -176,7 +178,7 @@ class NEATNetwork {
             }
         }
 
-        if (random() < 0.03) {
+        if (random() < mutationChance) {
             // Add a new node with a small probability
             let existingConnection = childGenome.connections[Math.floor(random() * childGenome.connections.length)];
             let newNode = new Node(childGenome.nextNodeId++);

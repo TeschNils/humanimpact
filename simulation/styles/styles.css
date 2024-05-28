@@ -159,6 +159,7 @@ main {
 #simulation-container {
     flex: 4;
     border: 1px solid #4D9DD2;
+    position: relative;
 }
 
 canvas {
@@ -180,3 +181,58 @@ canvas {
     border: 1px solid #4D9DD2
 }
 
+.organism-box {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: 1px solid #4D9DD2;
+    padding: 10px;
+    margin: 10px;
+    background-color: #141D22;
+    width: fit-content;
+    z-index: 10;
+}
+
+
+.organism-title {
+    margin-top: 0px;
+    color: white;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-label {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    text-align: left;
+    width: 30%;
+}
+
+.info-value {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    text-align: left;
+    width: 70%;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+}
+
+.gene-min, .gene-max, .gene-value {
+    font-size: 12px;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    margin: 0 5px;
+}
+
+.gene-slider {
+    flex: 1;
+    margin: 0 10px;
+}

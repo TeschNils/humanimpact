@@ -1,7 +1,8 @@
 
 
 class Gene {
-    constructor(minGeneValue, maxGeneValue) {
+    constructor(name, minGeneValue, maxGeneValue) {
+        this.name = name;
         this.minGeneValue = minGeneValue;
         this.maxGeneValue = maxGeneValue;
 
@@ -11,12 +12,8 @@ class Gene {
         this.mutationFactor = 0.05;
     }
 
-    getGeneValue(value, min, max) {
-        return value * (max - min) + min;
-    }
-
     getGene() {
-        return this.getGeneValue(this.geneScore, this.minGeneValue, this.maxGeneValue);
+        return mapToRange(this.geneScore, [0, 1], [this.minGeneValue, this.maxGeneValue]);
     }
 
     mutateGene() {
@@ -24,12 +21,12 @@ class Gene {
         this.geneScore = Math.max(0.0, Math.min(this.geneScore + mutationValue, 1.0));
     }
 
-    inherit(motherGene, fatherGene) {
-        if (Math.round(random()) == 0) {
-            this.geneScore = motherGene.geneScore
+    inherit(motherGene, fatherGene, fittestParent) {
+        if (random(0, 1) < 0.9) {
+            this.geneScore = fittestParent === 1 ? motherGene.geneScore : fatherGene.geneScore;
         }
         else {
-            this.geneScore = fatherGene.geneScore
+            this.geneScore = fittestParent === 1 ? fatherGene.geneScore : motherGene.geneScore;
         }
 
         if (random(0, 1) < this.mutationFactor) {
