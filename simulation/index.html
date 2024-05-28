@@ -4,6 +4,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/addons/p5.sound.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-svg/0.5.5/p5.js-svg.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
     <meta charset="utf-8" />
 
@@ -14,8 +15,10 @@
     <script src="./src/organism.js"></script>
     <script src="./src/gene.js"></script>
     <script src="./src/brain.js"></script>
+    <script src="./src/utils.js"></script>
     <script src="./src/food.js"></script>
     <script src="./src/neat.js"></script>
+    <script src="./src/pollution.js"></script>
     <script src="./src/controls.js"></script>
 
     <main>
@@ -34,6 +37,7 @@
           <div class="chart-container">
             <canvas id="population-chart"></canvas>
           </div>
+
           <div class="chart-container">
             <canvas id="generations-chart"></canvas>
           </div>
@@ -42,8 +46,7 @@
       
       <div class="simulation-infos">
         <div class="info-header">
-          <img class="info-icon" src="./assets/warning-icon.svg"/>
-          <h1 class="info-title">ALERTS</h1>
+          <h1 class="info-title">A L E R T S</h1>
         </div>
         <div class="info-card-list">          
         </div>
@@ -52,6 +55,7 @@
     </main>
     <script src="./src/plotStats.js"></script>
     <script src="./src/infoCard.js"></script>
+    <script src="./src/organismInfoBox.js"></script>
 
   </body>
 </html>

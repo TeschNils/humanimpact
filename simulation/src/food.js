@@ -1,10 +1,26 @@
 
 
 const FoodType = {
-    Plant: 2.0,
-    Rotten: -0.5,
-    Poisoned: -0.5,
-    Meat: 0.0
+    Plant: {
+        minEnergy: 1.0,
+        maxEnergy: 3.0,
+        color: [157, 206, 54]
+    },
+    Rotten: {
+        minEnergy: -0.75,
+        maxEnergy: -0.25,
+        color: [185, 102, 19]
+    },
+    Poisoned: {
+        minEnergy: -1.75,
+        maxEnergy: -1.0,
+        color: [0, 255, 194]
+    },
+    Meat: {
+        minEnergy: 1.5,
+        maxEnergy: 3.0,
+        color: [240, 105, 105]
+    }
 };
 
 
@@ -12,36 +28,62 @@ class Food {
     constructor(type) {
         this.timeAlive = 0;
         this.type = type; 
-        this.size = 5;
-        this.position = createVector(random(simResX), random(simResY));
+        this.position = new p5.Vector(random(simResX), random(simResY));
 
         this.desintegrated = false;
+
+        this.foodSizeRange = [5, 13];
+        this.foodColor = color(this.type.color);
+        this.size;
+
+        this.lifeTime = 7000;
+        this.plantDuration = 5000;
+
+        this.energyWorth;
+        
+        if (this.type === FoodType.Plant) {
+            this.size = random(this.foodSizeRange[0], this.foodSizeRange[1]);
+            this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Plant.minEnergy, FoodType.Plant.maxEnergy]);
+        }
+        else if (this.type === FoodType.Meat) {
+            this.size = random(this.foodSizeRange[0], this.foodSizeRange[1]);
+            this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Plant.minEnergy, FoodType.Plant.maxEnergy]);
+        }
     }
   
     display() {
-        if (this.type === FoodType.Plant) {
-            fill(200, 200, 200);
-        } else if (this.type === FoodType.Rotten) {
-            fill(171, 79, 18);
-        } else if (this.type === FoodType.Poisoned) {
-            fill(95, 191, 69);
-        } else if (this.type === FoodType.Meat) {
-            this.size = 3;
-            fill(240, 105, 105);
-        }
-
         noStroke();
-        ellipse(this.position.x, this.position.y, int(this.size));
+        fill(this.setAlpha(this.foodColor, 100));
+        ellipse(this.position.x, this.position.y, this.size);
+        fill(this.foodColor);
+        ellipse(this.position.x, this.position.y, int(this.size * 0.4));
+    }
+
+    rotFood() {
+        this.type = FoodType.Rotten;
+        this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Rotten.minEnergy, FoodType.Rotten.maxEnergy]);
+        this.foodColor = color(FoodType.Rotten.color);
+    }
+
+    poisonFood() {
+        this.type = FoodType.Rotten;
+        this.energyWorth = mapToRange(this.size, this.foodSizeRange, [FoodType.Poisoned.minEnergy, FoodType.Poisoned.maxEnergy]);
+        this.foodColor = color(FoodType.Poisoned.color);
     }
 
     update() {
         this.timeAlive += 1;
-        if (this.timeAlive === 5000) {
-            this.type = FoodType.Rotten;
+        if (this.type === FoodType.Plant && this.timeAlive === this.plantDuration) {
+            this.rotFood();
         }
-        else if (this.timeAlive === 7000) {
+        
+        if (this.timeAlive === this.lifeTime) {
             this.desintegrated = true;
         }
+    }
+
+    setAlpha(c, alpha) {
+        return color(c.levels[0], c.levels[1], c.levels[2], alpha);
     }
 }
   

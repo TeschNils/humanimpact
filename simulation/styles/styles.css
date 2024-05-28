@@ -2,7 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background-color: #0e1c25;
+    background-color: #141D22;
     font-family: Arial, Helvetica, sans-serif;
 
 }
@@ -19,7 +19,8 @@ html, body {
     gap: 20px;
     justify-content: center;
     align-items: center;
-    background-color: #0e1c25;
+    background-color: #141D22;
+    display: none
 }
 
 .info-box-corner {
@@ -28,8 +29,9 @@ html, body {
     top: 0px;
     height: 50px;
     width: 150px;
-    background-color: #0e1c25;
+    background-color: #141D22;
     clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 100%, 0% 100%);
+    display: none
 }
 
 .active-indicator {
@@ -39,6 +41,7 @@ html, body {
     background-color: rgb(22, 201, 22);
     box-shadow: 0px 0px 20px 5px rgb(22, 201, 22);
     animation: blink-animation 1s infinite alternate;
+    display: none
 }
 
 
@@ -86,7 +89,8 @@ main {
 
 .simulation-infos {
     flex: 1;
-    background-color: rgba(255, 255, 255, 0.055);
+    background-color: rgba(255, 255, 255, 0.00);
+    border: 1px solid #4D9DD2;
 }
 
 .info-header {
@@ -106,41 +110,60 @@ main {
 
 .info-title {
     font-size: 35px;
-    color: #FACB52
+    color: white
 }
 
 
 .info-card-list {
     height: 540px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 30px;
 }
 
 
 .info-card {
-    margin: 20px;
     border-radius: 5px;
-    border: 2px solid #FACB52;
-    background-color: #faca5210;
     height: auto;
-    color: #FACB52;
-    padding: 15px;
 }
 
 .info-card-title {
     margin: 0px;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 600;
+    height: 30px;
+    line-height: 30px;
+    color: white;
+    text-align: center;
+    background-size: 100%;
+}
+
+.title-critical {
+    background-image: url("../assets/alert-banner-red.svg");
+}
+
+.title-warning {
+    background-image: url("../assets/alert-banner-yellow.svg");
 }
 
 .info-card-text {
     margin: 0px;
     margin-top: 10px;
-    font-size: 15px;
+    font-size: 14px;
+    color: white;
+    margin: 15px;
 }
 
 #simulation-container {
     flex: 4;
+<<<<<<< HEAD
+    border: 1px solid #4D9DD2;
+    position: relative;
+=======
     min-width: 0;
+>>>>>>> main
 }
 
 canvas {
@@ -155,9 +178,65 @@ canvas {
     min-width: 0;
 }
 
+
 .chart-container {
     flex: 1;
-    background-color: rgba(255, 255, 255, 0.055);
-    min-width: 0;
+    background-color: rgba(255, 255, 255, 0.0);
+    border: 1px solid #4D9DD2
 }
 
+.organism-box {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: 1px solid #4D9DD2;
+    padding: 10px;
+    margin: 10px;
+    background-color: #141D22;
+    width: fit-content;
+    z-index: 10;
+}
+
+
+.organism-title {
+    margin-top: 0px;
+    color: white;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-label {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    text-align: left;
+    width: 30%;
+}
+
+.info-value {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    text-align: left;
+    width: 70%;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+}
+
+.gene-min, .gene-max, .gene-value {
+    font-size: 12px;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    margin: 0 5px;
+}
+
+.gene-slider {
+    flex: 1;
+    margin: 0 10px;
+}

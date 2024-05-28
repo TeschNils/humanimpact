@@ -6,33 +6,30 @@ class Organism {
         this.generation = 0;
 
         this.energy = 1.0;
-        this.initialEnergyLoss = 0.00075;
-        this.energyLossFactor = 0.0001;
+        this.maxEnergy = 15;
+        this.initialEnergyLoss = 0.0001;
+        this.energyLossFactor = 0.00001;
         this.currentEnergyLoss = this.initialEnergyLoss;
 
         this.timeAlive = 0;
 
-        this.wallDamage = 0.1;
+        this.wallDamage = 0.075;
 
         this.isAdult = false;
-        this.color = 255;
-
         this.adultAge = 700;
         this.childSize = 5;
         this.energyToBreed = 2.0;
-        this.energyBreedConsumption = 25;
-
-        this.isPoisoned = false;
-        this.isOilContaminated = false;
+        this.totalChildren = 0;
 
         this.visualDebug = false;
 
         this.genes = {
-            speed: new Gene(0.75, 1.25),
-            size: new Gene(5, 15),
-            sightReach: new Gene(45, 100),
-            sightAngle: new Gene(90, 150),
-            turnAngleRange: new Gene(10, 90)
+            speed: new Gene("speed", 0.75, 1.25),
+            size: new Gene("size", 5, 15),
+            sightReach: new Gene("sight reach", 45, 100),
+            sightAngle: new Gene("sight angle", 90, 150),
+            turnAngleRange: new Gene("turn angle", 10, 90),
+            diet: new Gene("diet", 0.0, 1.0)
         }
 
         // Organism can turn from -turnAngleRange/2 to +turnAngleRange/2
@@ -60,6 +57,29 @@ class Organism {
 
         this.prevDirection = p5.Vector.random2D();
         this.prevDirection2 = p5.Vector.random2D();
+
+        this.oilCovered = false;
+        this.insideOil = false;
+        this.oilCoveredSpeed = 0.15;
+        this.timeToClean = 500;
+        this.cleanCounter = 0;
+    }
+    eat(food) {
+        if (this.energy >= this.maxEnergy) {
+            return;
+        }
+        
+        // Diet specifies how much energy an organism gets through plant or meat
+        if (food.type === FoodType.Plant) {
+            this.energy += this.genes.diet.getGene() * food.energyWorth;
+        }
+        else if (food.type === FoodType.Meat) {
+            this.energy += (1 - this.genes.diet.getGene()) * food.energyWorth;
+        }
+        // Other food types (rotten, poisonous) are not affected by diet
+        else {
+            this.energy += food.energyWorth;
+        }
     }
 
     energyConsumption() {
@@ -72,6 +92,7 @@ class Organism {
     }
 
     observe(foods) {
+        // Get sensor positions
         let sightAngleLambda = (this.sightAngle / 2.0) * (Math.atan(1) * 4 / 180);
 
         this.sensorLeft = this.direction.copy().rotate(sightAngleLambda)
@@ -84,8 +105,7 @@ class Organism {
         this.sensorRight = this.sensorRight.mult(this.sightReach);
         this.sensorRight.add(this.position);
 
-        let largestSensorDistance = this.sensorLeft.dist(this.sensorRight);
-
+        // Observe food
         let foodFound = false;
         let closestFoodIndex = 0;
         let shortestDistanceToFood = this.sightReach;
@@ -95,7 +115,7 @@ class Organism {
             let distanceToFood = this.position.dist(food.position);
 
             if (distanceToFood < (this.displaySize / 2 + food.size / 2)) {
-                this.energy += food.type;
+                this.eat(food);
                 foods.splice(i, 1);
                 break;
             }
@@ -113,38 +133,32 @@ class Organism {
             }
         }
 
-        let foodDistance1 = 0.0;//random(0.4, 0.6);
-        let foodDistance2 = 0.0;//random(0.4, 0.6);
-        let foodType = 0.0;//random(0.4, 0.6);
+        let largestSensorDistance = this.sensorLeft.dist(this.sensorRight);
+        let foodDistance1 = 0.0;
+        let foodDistance2 = 0.0;
+        let foodType = 0.0;
         if (foodFound) {
             let food = foods[closestFoodIndex];
-
-            if (this.visualDebug) {
-                fill(0, 0, 255);
-                circle(
-                    food.position.x * this.transformFactorX + transformOffsetX,
-                    food.position.y * this.transformFactorY + transformOffsetY,
-                    4
-                );
-            }
-
             foodDistance1 = this.sensorLeft.dist(food.position) / largestSensorDistance;
             foodDistance2 = this.sensorRight.dist(food.position) / largestSensorDistance;
 
             if (this.visualDebug) {
-                stroke(255, 0, 0)
+                strokeWeight(1);
+                stroke(255, 100, 100)
                 line(this.sensorLeft.x, this.sensorLeft.y, food.position.x, food.position.y);
-                stroke(0, 0, 255);
+                stroke(100, 100, 255);
                 line(this.sensorRight.x, this.sensorRight.y, food.position.x, food.position.y);
             }
             
-
-            // food type encodings: Plant -> 1.0, Rotten -> 0.0;
-            if (food.type == FoodType.Plant) {
+            // Create numeric representation of food types
+            if (food.type === FoodType.Plant) {
                 foodType = 1.0;
             }
-            else if (food.foodType == FoodType.Rotten || food.foodType == FoodType.Poisoned) {
-                foodType = 0.5;
+            else if (food.type === FoodType.Meat) {
+                foodType = 0.5
+            }
+            else if (food.foodType === FoodType.Rotten || food.foodType === FoodType.Poisoned) {
+                foodType = 0.1;
             }
         }        
 
@@ -163,45 +177,43 @@ class Organism {
             this.brain.inheritBrain(fatherOrganism.brain);
         }
 
-        this.neatBrain.crossoverAndMutate(motherOrganism.neatBrain, fatherOrganism.neatBrain);
+        let fittestParentNum = (motherOrganism.timeAlive >= fatherOrganism.timeAlive ? 1 : 2);
+
+        this.neatBrain.crossoverAndMutate(motherOrganism.neatBrain, fatherOrganism.neatBrain, fittestParentNum);
     }
 
     mate(organisms) {
-        if (this.energy < this.energyToBreed || !this.isAdult
-        ) {
+        if (this.energy < this.energyToBreed || !this.isAdult || this.oilCovered) {
             return;
         }
-        
+
         for (let i=0; i<organisms.length; i++) {
             let otherOrganism = organisms[i];
             if (otherOrganism == this) {
                 continue;
             }
-            
+
             let distance = p5.Vector.dist(this.position, otherOrganism.position);
             let collisionDistance = this.displaySize / 2 + otherOrganism.displaySize / 2;
             
             if (distance <= collisionDistance && 
                 otherOrganism.energy >= this.energyToBreed &&
-                otherOrganism.isAdult
+                otherOrganism.isAdult &&
+                !otherOrganism.oilCovered
             ) {
-                
-                let childAmount = 1;
-                if (this.energy > 5.0 && otherOrganism.energy > 5.0) {
-                    childAmount = 2;
-                }
-
+                let childAmount = random([1, 2, 3]);
                 for (let c=0; c<childAmount; c++) {
                     let child = new Organism();
                     child.inheritGenes(this, otherOrganism);
-                    child.generation = this.generation + 1;
+                    child.generation = Math.ceil((this.generation + otherOrganism.generation) / 2) + 1;
                     child.position.x = this.position.x - this.displaySize / 2;
                     child.position.y = this.position.y - this.displaySize / 2;
-    
                     organisms.unshift(child);
-    
+
                     this.energy = 1.75;
                     otherOrganism.energy = 1.75;
+                    this.totalChildren += childAmount;
+                    otherOrganism.totalChildren += childAmount;
                 }
                 break;
             }
@@ -220,9 +232,14 @@ class Organism {
         this.prevDirection2 = this.prevDirection.copy();
         this.prevDirection = this.direction.copy();
         
+        this.currentSpeed = this.speed;
+        if (this.oilCovered) {
+            this.currentSpeed = this.oilCoveredSpeed;
+        }
+
         // Update direction and position
         this.direction = this.direction.rotate(this.turnAngle).normalize();
-        this.position = this.position.add(this.direction.mult(this.speed));
+        this.position = this.position.add(this.direction.mult(this.currentSpeed));
         
         // Handle wall collisions
         if (this.position.x < this.size / 2 || this.position.x > simResX - this.size / 2) {
@@ -245,53 +262,56 @@ class Organism {
         
         this.energyConsumption();
         this.timeAlive += 1;
+
+        if (this.oilCovered && !this.insideOil) {
+            this.cleanCounter += 1;
+            if (this.cleanCounter === this.timeToClean) {
+                this.oilCovered = false;
+                this.cleanCounter = 0;
+            }
+        }
     }
   
-    display() {
-
-
-        fill(this.color);
-        strokeWeight(1)
-        stroke(100);
-
-        // Draw head
-        ellipse(this.position.x, this.position.y, this.displaySize);
-
-        // Draw mid body
-        this.prevDirection.normalize();
-        let mid = p5.Vector.random2D();
-        mid.x = this.position.x - this.prevDirection.x * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
-        mid.y = this.position.y - this.prevDirection.y * ((this.displaySize / 2) + (this.displaySize / 2 / 2));
-        ellipse(mid.x, mid.y, this.displaySize / 2);
-
-        // Draw lower body
-        this.prevDirection2.normalize();
-        let lower = p5.Vector.random2D();
-        lower.x = mid.x - this.prevDirection2.x * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
-        lower.y = mid.y - this.prevDirection2.y * ((this.displaySize / 3) + (this.displaySize / 3 / 2));
-        ellipse(lower.x, lower.y, this.displaySize / 3);
+    display(i) {
+        let mainColor = color(234, 231, 206);
+        if (this.oilCovered) {
+            mainColor = color(145, 85, 250)
+        }
 
         // Draw sensors
-        let maxReachLine = this.displaySize * 1.25;
-        let minReachLine = this.displaySize * 0.65;
+        let maxReachLine = this.displaySize * 1.3;
+        let minReachLine = this.displaySize * 0.7;
 
         let reachLineFactor = ((this.sightReach - 45) / (100 - 45)) * (maxReachLine - minReachLine) + minReachLine;
 
         let displaySensorLeft = this.sensorLeft.copy().sub(this.position).normalize();
         let displaySensorRight = this.sensorRight.copy().sub(this.position).normalize();
-
+        
         if (this.visualDebug) {
-            noFill();
-            stroke(0, 0, 0, 50);
+            fill(255, 255, 255, 0);
+            strokeWeight(1)
+            stroke(255)
             circle(this.position.x, this.position.y, this.sightReach * 2);
-            stroke(0, 0, 0, 100)
             line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * this.sightReach, this.position.y + displaySensorLeft.y * this.sightReach);
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * this.sightReach, this.position.y + displaySensorRight.y * this.sightReach);
         }
         else {
-            stroke(0, 0, 0, 100)
+            strokeWeight(1);
+            stroke(mainColor);
             line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
+            ellipse(this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor, int(this.displaySize * 0.2));
+            ellipse(this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor, int(this.displaySize * 0.2));
+        }
+
+        strokeWeight(0);
+        fill(mainColor);
+        ellipse(this.position.x, this.position.y, this.displaySize);
+
+        // Additional styling when oil covered
+        if (this.oilCovered) {
+            fill(44, 11, 103);
+            ellipse(this.position.x, this.position.y, this.displaySize * 0.75);
         }
     }
 }

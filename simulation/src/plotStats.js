@@ -21,6 +21,9 @@ function plotPopulation(populationOverTime) {
         datasets: [{
             label: "population",
             data: y,
+            fill: true,
+            backgroundColor: "rgb(199, 57, 69, 0.25)",
+            borderColor: "rgb(199, 57, 69)"
         }]
     };
     
@@ -73,6 +76,8 @@ function plotGenerations(generationDistribution) {
         datasets: [{
             label: "generations",
             data: y,
+            backgroundColor: "rgb(80, 166, 246, 0.2)",
+            borderColor: "rgb(80, 166, 246)"
         }],
         borderWidth: 1
     };
