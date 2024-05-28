@@ -158,8 +158,12 @@ main {
 
 #simulation-container {
     flex: 4;
+<<<<<<< HEAD
     border: 1px solid #4D9DD2;
     position: relative;
+=======
+    min-width: 0;
+>>>>>>> main
 }
 
 canvas {

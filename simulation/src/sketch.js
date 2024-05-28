@@ -17,8 +17,8 @@ let co2Pollution;
 let co2Radius = 750;
 let co2Position;
 
-let simResX = 6000;
-let simResY = 6000;
+let simResX = 1000;
+let simResY = 1000;
 const fillCanvas = false;
 
 let transformFactor = 0;
@@ -54,6 +54,7 @@ function resizeCanvasToParent() {
     }
 
     resizeCanvas(containerWidth, containerHeight);
+
 }
 
 
