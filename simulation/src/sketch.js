@@ -17,8 +17,8 @@ let co2Pollution;
 let co2Radius = 750;
 let co2Position;
 
-const simResX = 1200;
-const simResY = 1200;
+const simResX = 1000;
+const simResY = 1000;
 
 let transformFactor = 0;
 
@@ -199,8 +199,6 @@ function draw() {
     }
     //drawGrid(150);
 
-    let fps = frameRate();
-    text(fps, 50, 50);
 
 }
 

@@ -22,7 +22,6 @@ class Controls {
             const pos = { x: e.clientX, y: e.clientY };
             const dx = pos.x - prevX;
             const dy = pos.y - prevY;
-            console.log(controls.view.x, controls.view.y, dx, dy);
 
             if (prevX || prevY) {
                 
@@ -80,9 +79,21 @@ class Controls {
             const wx = (x - controls.view.x) / (width * controls.view.zoom);
             const wy = (y - controls.view.y) / (height * controls.view.zoom);
 
-            if (controls.view.zoom + zoom > 1 && controls.view.zoom + zoom < 3) {
-                controls.view.x -= wx * width * zoom;
-                controls.view.y -= wy * height * zoom;
+            if (controls.view.zoom + zoom >= 1 && controls.view.zoom + zoom < 3) {
+
+                let leftBound = 0;
+                let topBound = 0;
+                let rightBound = -(simResX*transformFactor*(controls.view.zoom+zoom) -width);
+                let bottomBound = -(simResY*transformFactor*(controls.view.zoom+zoom) -height);
+
+                let nextX = controls.view.x - wx * width * zoom;
+                let nextY = controls.view.y - wy * height * zoom;
+                if (nextX > leftBound) nextX = leftBound;
+                if (nextY > topBound) nextY = topBound;
+                if (nextX < rightBound) nextX = rightBound;
+                if (nextY < bottomBound) nextY = bottomBound;
+                controls.view.x = nextX;
+                controls.view.y = nextY;
                 controls.view.zoom += zoom;
             }
         }
