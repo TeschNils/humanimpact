@@ -174,7 +174,7 @@ function simulationStep() {
     iteration += 1;
 }
 
-function initialScaling() {
+function scaleToScope() {
     simResRelation = simResX / simResY;
     widthHeightRelation = width / height;
     let transformOffsetXN;
@@ -184,7 +184,8 @@ function initialScaling() {
         transformFactor = height / simResY;
         transformOffsetXN = 0;
         transformOffsetYN = (height / 2 - (simResY * transformFactor) / 2);
-    } else {
+    }
+    else {
         transformFactor = width / simResX;
         transformOffsetYN = 0;
         transformOffsetXN = (width / 2 - (simResX * transformFactor) / 2);
@@ -201,19 +202,16 @@ function draw() {
 
     frameRate(60);
 
-    initialScaling();
+    scaleToScope();
 
     for (let i = 0; i < speed; i++) {
         simulationStep();
     }
     //drawGrid(150);
-
-
 }
 
 
 function mouseClicked(mousePosition) {
-
     for (let i=0; i<organisms.length; i++) {
         if (mousePosition.dist(organisms[i].position) <= organisms[i].displaySize / 2) {
             showOrganismInfo = true;

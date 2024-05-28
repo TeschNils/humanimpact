@@ -14,7 +14,10 @@ class Controls {
             controls.viewPos.prevX = e.clientX;
             controls.viewPos.prevY = e.clientY;
 
-            mouseClicked(createVector(-(controls.view.x-mouseX)/controls.view.zoom/transformFactor, -(controls.view.y-mouseY)/controls.view.zoom/transformFactor));
+            mouseClicked(createVector(
+                -(controls.view.x-mouseX)/controls.view.zoom/transformFactor,
+                -(controls.view.y-mouseY)/controls.view.zoom/transformFactor)
+            );
         }
 
         function mouseDragged(e) {
