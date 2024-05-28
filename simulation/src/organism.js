@@ -52,7 +52,7 @@ class Organism {
         this.sensorLeft = p5.Vector.random2D();
         this.sensorRight = p5.Vector.random2D();
 
-        this.position = createVector(random(width), random(height));
+        this.position = createVector(random(simResX), random(simResY));
         this.direction = p5.Vector.random2D();
 
         this.prevDirection = p5.Vector.random2D();
@@ -242,11 +242,11 @@ class Organism {
         this.position = this.position.add(this.direction.mult(this.currentSpeed));
         
         // Handle wall collisions
-        if (this.position.x < this.size / 2 || this.position.x > width - this.size / 2) {
+        if (this.position.x < this.size / 2 || this.position.x > simResX - this.size / 2) {
             this.direction.x *= -1;
             this.energy -= this.wallDamage;
         }
-        if (this.position.y < this.size / 2 || this.position.y > height - this.size / 2) {
+        if (this.position.y < this.size / 2 || this.position.y > simResY - this.size / 2) {
             this.direction.y *= -1;
             this.energy -= this.wallDamage;
         }
