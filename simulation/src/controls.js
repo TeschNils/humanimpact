@@ -25,13 +25,33 @@ class Controls {
             console.log(controls.view.x, controls.view.y, dx, dy);
 
             if (prevX || prevY) {
-                console.log((((controls.view.x + dx)* transformFactor*controls.view.zoom) + width));
-                if ((controls.view.x + dx) <= 0 && ((controls.view.x +dx) >= -(simResX*transformFactor*controls.view.zoom - width))) {
+                
+                let leftBound = 0;
+                let topBound = 0;
+                let rightBound = -(simResX*transformFactor*controls.view.zoom - width);
+                let bottomBound = -(simResY*transformFactor*controls.view.zoom - height);
+                // If the view goes out of bounds of the canvas, only allow dragging in the direction that keeps the view within the bounds
+                if ((controls.view.x + dx) > leftBound && (dx < 0)) {
                     controls.view.x += dx;
                 }
-                if ((controls.view.y + dy) <= 0 && ((controls.view.y +dy) >= -(simResY*transformFactor*controls.view.zoom - height))) {
+                if ((controls.view.y + dy) > topBound && (dy < 0)) {
                     controls.view.y += dy;
                 }
+                if ((controls.view.x + dx) < rightBound && (dx > 0)) {
+                    controls.view.x += dx;
+                }
+                if ((controls.view.y + dy) < bottomBound && (dy > 0)) {
+                    controls.view.y += dy;
+                }
+                
+                // If the view is within the bounds of the canvas, allow dragging in all directions
+                if ((controls.view.x + dx) <= leftBound && (controls.view.x +dx) >= rightBound) {
+                    controls.view.x += dx;
+                }
+                if ((controls.view.y + dy) <= topBound && (controls.view.y +dy) >= bottomBound) {
+                    controls.view.y += dy;
+                }
+                
                 controls.viewPos.prevX = pos.x, controls.viewPos.prevY = pos.y
             }
 
