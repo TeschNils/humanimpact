@@ -63,6 +63,11 @@ class Organism {
         this.oilCoveredSpeed = 0.15;
         this.timeToClean = 500;
         this.cleanCounter = 0;
+
+        this.isRadiated = false;
+        this.radiationMutationChance = 0.25;
+        this.radiationMutationFactor = 0.5;
+        this.physicalMutationRotations = [];
     }
     eat(food) {
         if (this.energy >= this.maxEnergy) {
@@ -182,6 +187,22 @@ class Organism {
         this.neatBrain.crossoverAndMutate(motherOrganism.neatBrain, fatherOrganism.neatBrain, fittestParentNum);
     }
 
+    mutateThroughRadiation() {
+        for (let gene in this.genes) {
+            if (random(0, 1) < this.radiationMutationChance) {
+                // Mutate with higher rate
+                this.genes[gene].mutationFactor = this.radiationMutationFactor;
+                this.genes[gene].mutateGene();
+
+                // We will later draw as many green circle shapes (indication mutations) as many radiation induced
+                // mutations there were. These green circles will be on the border of the organism body. Therefore we
+                // need to now initially set where in the body realtive to the organism the circles are by an angle
+                let angleRadians = random(0, 360) * (PI / 180);
+                this.physicalMutationRotations.push(angleRadians);
+            }
+        }
+    }
+
     mate(organisms) {
         if (this.energy < this.energyToBreed || !this.isAdult || this.oilCovered) {
             return;
@@ -263,6 +284,10 @@ class Organism {
         this.energyConsumption();
         this.timeAlive += 1;
 
+        if (this.insideOil) {
+            this.cleanCounter = 0;
+        }
+
         if (this.oilCovered && !this.insideOil) {
             this.cleanCounter += 1;
             if (this.cleanCounter === this.timeToClean) {
@@ -277,7 +302,6 @@ class Organism {
         if (this.oilCovered) {
             mainColor = color(145, 85, 250)
         }
-
         // Draw sensors
         let maxReachLine = this.displaySize * 1.3;
         let minReachLine = this.displaySize * 0.7;
@@ -298,6 +322,12 @@ class Organism {
         else {
             strokeWeight(1);
             stroke(mainColor);
+
+            // Give green stoke if the organism is radiation poisoned
+            if (this.isRadiated) {
+                stroke(0, 255, 0, 100);
+            }
+
             line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
             ellipse(this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor, int(this.displaySize * 0.2));
@@ -306,6 +336,12 @@ class Organism {
 
         strokeWeight(0);
         fill(mainColor);
+
+        // Give green stoke if the organism is radiation poisoned
+        if (this.isRadiated) {
+            strokeWeight(1);
+            stroke(0, 255, 0, 100);
+        }
         ellipse(this.position.x, this.position.y, this.displaySize);
 
         // Additional styling when oil covered
@@ -313,5 +349,19 @@ class Organism {
             fill(44, 11, 103);
             ellipse(this.position.x, this.position.y, this.displaySize * 0.75);
         }
+
+        // Additional shapes when radiation poisoned
+        if (this.isRadiated) {
+            let radius = this.displaySize / 2;
+            for (let i=0; i<this.physicalMutationRotations.length; i++) {
+                let mutationShapeAngle = this.physicalMutationRotations[i];
+                let x = this.position.x + radius * cos(mutationShapeAngle);
+                let y = this.position.y + radius * sin(mutationShapeAngle);
+
+                fill(0, 255, 0, 100);
+                ellipse(x, y, this.displaySize * 0.33, radius);
+            }
+        }
+        
     }
 }

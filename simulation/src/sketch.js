@@ -10,16 +10,12 @@ let speed = 1;
 let iteration = 0;
 
 let oilPollution;
-let oilRadius = 450;
-let oilPosition;
-
 let co2Pollution;
-let co2Radius = 750;
-let co2Position;
+let nuclearWastePollution;
 
 let simResX = 1000;
 let simResY = 1000;
-const fillCanvas = false;
+const fillCanvas = true;
 
 let transformFactor = 0;
 let showOrganismInfo = false;
@@ -105,18 +101,32 @@ function simulationStep() {
         }
     }
 
+    if (nuclearWastePollution) {
+        nuclearWastePollution.update();
+        nuclearWastePollution.display();
+        if (nuclearWastePollution.desintegrated) {
+            nuclearWastePollution = null;
+        }
+    }
+
     for (let i=0; i<foods.length; i++) {
         let food = foods[i];
 
         if (oilPollution && food.type !== FoodType.Poisoned) {
-            if (food.position.dist(oilPollution.position) < oilPollution.size / 2) {
+            if (oilPollution.checkCollision(food.position)) {
                 foods.splice(i, 1);
                 continue;
             }
         }
 
+        if (nuclearWastePollution && food.type !== FoodType.Poisoned) {
+            if (nuclearWastePollution.checkCollision(food.position)) {
+                food.poisonFood();
+            }
+        }
+
         if (co2Pollution && food.type !== FoodType.Poisoned) {
-            if (food.position.dist(co2Pollution.position) < co2Pollution.size / 2 && random(0, 1) < 0.001) {
+            if (co2Pollution.checkCollision(food.position) && random(0, 1) < 0.001) {
                 food.poisonFood();
             }
         }
@@ -143,12 +153,19 @@ function simulationStep() {
 
         // Handle organism in oil polluted area
         if (oilPollution) {
-            if (organism.position.dist(oilPollution.position) < oilPollution.size / 2) {
+            if (oilPollution.checkCollision(organism.position)) {
                 organism.oilCovered = true;
                 organism.insideOil = true;
             }
             else {
                 organism.insideOil = false;
+            }
+        }
+
+        if (nuclearWastePollution && !organism.isRadiated) {
+            if (nuclearWastePollution.checkCollision(organism.position)) {
+                organism.isRadiated = true;
+                organism.mutateThroughRadiation();
             }
         }
 
@@ -235,30 +252,13 @@ function keyPressed(event) {
         }
     }
     else if (key.toLowerCase() === "1") {
-        oilPollution = new OilPollution(
-            random(
-                -(controls.view.x)/controls.view.zoom/transformFactor,
-                -(controls.view.x-width)/controls.view.zoom/transformFactor,
-            ),
-            random(
-                -(controls.view.y)/controls.view.zoom/transformFactor,
-                -(controls.view.y-height)/controls.view.zoom/transformFactor,
-            ),
-            oilRadius
-        );
+        oilPollution = new OilPollution();
     }
     else if (key.toLowerCase() === "2") {
-        co2Pollution = new CO2Pollution(
-            random(
-                -(controls.view.x)/controls.view.zoom/transformFactor,
-                -(controls.view.x-width)/controls.view.zoom/transformFactor,
-            ),
-            random(
-                -(controls.view.y)/controls.view.zoom/transformFactor,
-                -(controls.view.y-height)/controls.view.zoom/transformFactor,
-            ),
-            co2Radius
-        );
+        co2Pollution = new CO2Pollution();
+    }
+    else if (key.toLowerCase() === "3") {
+        nuclearWastePollution = new NuclearWastePollution();
     }
 }
 
