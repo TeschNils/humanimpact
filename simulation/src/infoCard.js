@@ -8,10 +8,10 @@ async function createAlertCard(pollutionType) {
     var title;
     var text;
     try {
-        const response = await fetch('http://localhost:1234/v1/chat/completions', {
-            method: 'POST',
+        const response = await fetch("http://localhost:1234/v1/chat/completions", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 "model": "bartowski/Llama-3-8B-Instruct-Gradient-1048k-GGUF",
@@ -35,9 +35,9 @@ async function createAlertCard(pollutionType) {
             text = msg;
         }
     } catch (error) {
-        console.error('Error:', error);
-        title = "Error";
-        text = "An error occured while fetching the data. Please try again later.";
+        console.error("Error:", error);
+        title = "Alert for " + pollutionType;
+        text = "An alert for " + pollutionType + " has been generated.";
     }
 
     var infoCard = document.createElement("div");
@@ -47,14 +47,6 @@ async function createAlertCard(pollutionType) {
     titleElement.classList.add("info-card-title");
     titleElement.textContent = title;
 
-    /*
-    if (severity === "warning") {
-        titleElement.classList.add("title-warning");
-    }
-    else if (severity === "critical") {
-        titleElement.classList.add("title-critical");
-    }
-    */
     titleElement.classList.add("title-critical");
 
     var textElement = document.createElement("p");
