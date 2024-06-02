@@ -1,29 +1,43 @@
 let organisms = [];
 let foods = [];
-let numFood = 300;
-let numOrganisms = 500;
-let newFoodProbability = 0.05;
+let numFood = 375;
+let numOrganisms = 750;
 
 let populationHistory = [numOrganisms];
 let generationDistribution;
 let speed = 1;
 let iteration = 0;
 
-let oilPollution;
-let oilRadius = 450;
-let oilPosition;
+let onGoingPollution = false;
+let pollution;
 
+let oilPollution;
 let co2Pollution;
-let co2Radius = 750;
-let co2Position;
+let nuclearWastePollution;
+
 
 let simResX = 1000;
 let simResY = 1000;
-const fillCanvas = false;
+const fillCanvas = true;
 
 let transformFactor = 0;
 let showOrganismInfo = false;
 let organismInfoIndex = 0;
+
+let oilBanner;
+let co2Banner;
+let nuclearWasteBanner;
+
+let showBanner = null;
+let bannerTime = 4;
+let bannerStart;
+
+
+function preload() {
+    oilBanner = loadImage("./assets/oil-banner.svg");
+    co2Banner = loadImage("./assets/co2-banner.svg");
+    nuclearWasteBanner = loadImage("./assets/nuclear-banner.svg");
+}
 
 
 function setup() {
@@ -73,7 +87,7 @@ function drawGrid(cellSize) {
 
 
 function simulationStep() {
-    background(10, 29, 34);
+    background(13, 10, 35);
 
     if (organisms.length == 0) {
         textAlign(CENTER, CENTER);
@@ -85,10 +99,21 @@ function simulationStep() {
         return;
     }
 
-    if (random(0, 1) <= newFoodProbability) {
-        foods.push(new Food(FoodType.Plant));
+    let minFoodAmount = 100;
+    if (organisms.length / 2 > minFoodAmount) {
+        minFoodAmount = organisms.length / 2;
     }
+    let newFoodAmount = minFoodAmount - foods.length;
+    if (iteration % 20 === 0) {
+    }
+    if (newFoodAmount > 0) {
+        for (let i=0; i<newFoodAmount;i++) {
+            foods.push(new Food(FoodType.Plant));
+        }
+    }
+    
 
+    // Handle current pollution
     if (oilPollution) {
         oilPollution.update();
         oilPollution.display();
@@ -105,18 +130,32 @@ function simulationStep() {
         }
     }
 
+    if (nuclearWastePollution) {
+        nuclearWastePollution.update();
+        nuclearWastePollution.display();
+        if (nuclearWastePollution.desintegrated) {
+            nuclearWastePollution = null;
+        }
+    }
+
     for (let i=0; i<foods.length; i++) {
         let food = foods[i];
 
         if (oilPollution && food.type !== FoodType.Poisoned) {
-            if (food.position.dist(oilPollution.position) < oilPollution.size / 2) {
+            if (oilPollution.checkCollision(food.position)) {
                 foods.splice(i, 1);
                 continue;
             }
         }
 
+        if (nuclearWastePollution && food.type !== FoodType.Poisoned) {
+            if (nuclearWastePollution.checkCollision(food.position)) {
+                food.poisonFood();
+            }
+        }
+
         if (co2Pollution && food.type !== FoodType.Poisoned) {
-            if (food.position.dist(co2Pollution.position) < co2Pollution.size / 2 && random(0, 1) < 0.001) {
+            if (co2Pollution.checkCollision(food.position) && random(0, 1) < 0.001) {
                 food.poisonFood();
             }
         }
@@ -143,12 +182,19 @@ function simulationStep() {
 
         // Handle organism in oil polluted area
         if (oilPollution) {
-            if (organism.position.dist(oilPollution.position) < oilPollution.size / 2) {
+            if (oilPollution.checkCollision(organism.position)) {
                 organism.oilCovered = true;
                 organism.insideOil = true;
             }
             else {
                 organism.insideOil = false;
+            }
+        }
+
+        if (nuclearWastePollution && !organism.isRadiated) {
+            if (nuclearWastePollution.checkCollision(organism.position)) {
+                organism.isRadiated = true;
+                organism.mutateThroughRadiation();
             }
         }
 
@@ -162,7 +208,7 @@ function simulationStep() {
         if (organism.energy <= 0) {
             let meat = new Food(FoodType.Meat);
             meat.position = organism.position.copy();
-            foods.push(meat);
+            //foods.push(meat);
             organisms.splice(i, 1);
         }
     }
@@ -173,6 +219,26 @@ function simulationStep() {
     }
 
     iteration += 1;
+
+    if (showBanner) {
+        showPollutionWarningBanner();
+        if (millis() >= bannerStart + bannerTime * 1000) {
+            showBanner = false;
+            // set pollution here
+            if (pollution === "oil") {
+                oilPollution = new OilPollution();
+                createAlertCard(PollutionType.Oil);
+            }
+            else if (pollution === "co2") {
+                co2Pollution = new CO2Pollution();
+                createAlertCard(PollutionType.CO2);
+            }
+            else if (pollution === "nuclear") {
+                nuclearWastePollution = new NuclearWastePollution();
+                createAlertCard(PollutionType.Nuclear);
+            }
+        }
+    }
 }
 
 function scaleToScope() {
@@ -212,6 +278,32 @@ function draw() {
 }
 
 
+
+function showPollutionWarningBanner() {
+    let banner;
+    switch (pollution) {
+        case "oil":
+            banner = oilBanner;
+            break;
+        case "co2":
+            banner = co2Banner;
+            break;
+        case "nuclear":
+            banner = nuclearWasteBanner;
+            break;
+    }
+
+    imageMode(CENTER)
+    image(
+        banner,
+        -((controls.view.x - width / 2) / transformFactor / controls.view.zoom),
+        -((controls.view.y - height / 2) / transformFactor / controls.view.zoom),
+        banner.width / controls.view.zoom,
+        banner.height / controls.view.zoom
+    );   
+}
+
+
 function mouseClicked(mousePosition) {
     for (let i=0; i<organisms.length; i++) {
         if (mousePosition.dist(organisms[i].position) <= organisms[i].displaySize / 2) {
@@ -226,7 +318,7 @@ function mouseClicked(mousePosition) {
 
 
 function keyPressed(event) {
-    if (key.toLowerCase() === "e") {
+    if (key.toLowerCase() === "s") {
         if (speed === 10) {
             speed = 1;
         }
@@ -234,31 +326,22 @@ function keyPressed(event) {
             speed = 10;
         }
     }
-    else if (key.toLowerCase() === "1") {
-        oilPollution = new OilPollution(
-            random(
-                -(controls.view.x)/controls.view.zoom/transformFactor,
-                -(controls.view.x-width)/controls.view.zoom/transformFactor,
-            ),
-            random(
-                -(controls.view.y)/controls.view.zoom/transformFactor,
-                -(controls.view.y-height)/controls.view.zoom/transformFactor,
-            ),
-            oilRadius
-        );
-    }
-    else if (key.toLowerCase() === "2") {
-        co2Pollution = new CO2Pollution(
-            random(
-                -(controls.view.x)/controls.view.zoom/transformFactor,
-                -(controls.view.x-width)/controls.view.zoom/transformFactor,
-            ),
-            random(
-                -(controls.view.y)/controls.view.zoom/transformFactor,
-                -(controls.view.y-height)/controls.view.zoom/transformFactor,
-            ),
-            co2Radius
-        );
+
+    else if (["1", "2", "3"].includes(key.toLowerCase()) && !showBanner) {
+        showBanner = true;
+        bannerStart = millis();
+
+        switch (key.toLowerCase()) {
+            case "1":
+                pollution = "oil";
+                break;
+            case "2":
+                pollution = "co2";
+                break;
+            case "3":
+                pollution = "nuclear";
+                break;
+        }
     }
 }
 

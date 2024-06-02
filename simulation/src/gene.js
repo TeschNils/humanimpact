@@ -22,6 +22,7 @@ class Gene {
     }
 
     inherit(motherGene, fatherGene, fittestParent) {
+        // Have a 90% chance of taking the gene of the fitter/longer-living parent
         if (random(0, 1) < 0.9) {
             this.geneScore = fittestParent === 1 ? motherGene.geneScore : fatherGene.geneScore;
         }
@@ -29,7 +30,7 @@ class Gene {
             this.geneScore = fittestParent === 1 ? fatherGene.geneScore : motherGene.geneScore;
         }
 
-        if (random(0, 1) < this.mutationFactor) {
+        if (random(0, 1) < this.mutationChance) {
             this.mutateGene();
         }
     }

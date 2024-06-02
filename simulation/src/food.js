@@ -2,23 +2,23 @@
 
 const FoodType = {
     Plant: {
-        minEnergy: 1.0,
-        maxEnergy: 3.0,
+        minEnergy: 0.75,
+        maxEnergy: 1.5,
         color: [157, 206, 54]
     },
     Rotten: {
-        minEnergy: -0.75,
+        minEnergy: -0.5,
         maxEnergy: -0.25,
         color: [185, 102, 19]
     },
     Poisoned: {
-        minEnergy: -1.75,
-        maxEnergy: -1.0,
+        minEnergy: -1.5,
+        maxEnergy: -0.75,
         color: [0, 255, 194]
     },
     Meat: {
-        minEnergy: 1.5,
-        maxEnergy: 3.0,
+        minEnergy: 0.75,
+        maxEnergy: 1.5,
         color: [240, 105, 105]
     }
 };

@@ -6,39 +6,37 @@ class Organism {
         this.generation = 0;
 
         this.energy = 1.0;
-        this.maxEnergy = 15;
-        this.initialEnergyLoss = 0.0001;
-        this.energyLossFactor = 0.00001;
-        this.currentEnergyLoss = this.initialEnergyLoss;
+        this.maxEnergy = 5.0;
+        this.baseEnergyLoss = 0.0005;
+        this.energyLossFactor = 0.0;
+        this.currentEnergyLoss = this.baseEnergyLoss;
 
         this.timeAlive = 0;
 
-        this.wallDamage = 0.075;
+        this.wallDamage = 0.0025;
 
         this.isAdult = false;
         this.adultAge = 700;
         this.childSize = 5;
-        this.energyToBreed = 2.0;
+        this.energyToBreed = 1.125;
         this.totalChildren = 0;
 
         this.visualDebug = false;
 
         this.genes = {
-            speed: new Gene("speed", 0.75, 1.25),
+            speed: new Gene("speed", 0.35, 0.9),
             size: new Gene("size", 5, 15),
-            sightReach: new Gene("sight reach", 45, 100),
-            sightAngle: new Gene("sight angle", 90, 150),
+            sightReach: new Gene("sight reach", 75, 125),
+            sightAngle: new Gene("sight angle", 100, 175),
             turnAngleRange: new Gene("turn angle", 10, 90),
-            diet: new Gene("diet", 0.0, 1.0)
+            diet: new Gene("diet", 0.9, 1.0)
         }
 
         // Organism can turn from -turnAngleRange/2 to +turnAngleRange/2
         this.turnAngleRange = this.genes.turnAngleRange.getGene();
         this.turnAngle;
 
-        this.brain = new Brain();
         this.observation = [];
-
         this.neatBrain = new NEATNetwork(3, 1);
 
         this.displaySize = this.childSize;
@@ -63,14 +61,18 @@ class Organism {
         this.oilCoveredSpeed = 0.15;
         this.timeToClean = 500;
         this.cleanCounter = 0;
+
+        this.isRadiated = false;
+        this.radiationMutationChance = 0.5;
+        this.radiationMutationFactor = 0.5;
+        this.physicalMutationRotations = [];
     }
     eat(food) {
-        if (this.energy >= this.maxEnergy) {
-            return;
-        }
-        
         // Diet specifies how much energy an organism gets through plant or meat
         if (food.type === FoodType.Plant) {
+            if (this.energy >= this.maxEnergy) {
+                return;
+            }
             this.energy += this.genes.diet.getGene() * food.energyWorth;
         }
         else if (food.type === FoodType.Meat) {
@@ -83,12 +85,13 @@ class Organism {
     }
 
     energyConsumption() {
-        let speedEnergyLoss = (this.currentEnergyLoss * (this.genes.speed.geneScore / 1.25));
-        let sizeEnergyLoss = (this.currentEnergyLoss * (this.genes.size.geneScore / 15));
-        let turnAngleLoss = (this.currentEnergyLoss * (Math.abs(this.turnAngle) / (this.turnAngleRange / 2)));
-        this.energy -= speedEnergyLoss + sizeEnergyLoss + turnAngleLoss;
+        this.currentEnergyLoss = this.baseEnergyLoss * Math.exp(this.energyLossFactor * this.timeAlive);
 
-        this.currentEnergyLoss = this.initialEnergyLoss * Math.exp(this.energyLossFactor * this.timeAlive);
+        let speedEnergyLoss = this.currentEnergyLoss * this.genes.speed.geneScore;
+        let sizeEnergyLoss = this.currentEnergyLoss * this.genes.size.geneScore;
+        let turnAngleLoss = (this.currentEnergyLoss * (Math.abs(this.turnAngle) / (this.turnAngleRange / 2)));
+
+        this.energy -= speedEnergyLoss + sizeEnergyLoss + turnAngleLoss;
     }
 
     observe(foods) {
@@ -112,6 +115,7 @@ class Organism {
 
         for (let i=0; i<foods.length - 1; i++) {
             let food = foods[i];
+
             let distanceToFood = this.position.dist(food.position);
 
             if (distanceToFood < (this.displaySize / 2 + food.size / 2)) {
@@ -170,16 +174,32 @@ class Organism {
             this.genes[gene].inherit(motherOrganism.genes[gene], fatherOrganism.genes[gene]);
         }
 
-        if (random(0, 1) < 0.5) {
-            this.brain.inheritBrain(motherOrganism.brain);
-        }
-        else {
-            this.brain.inheritBrain(fatherOrganism.brain);
-        }
-
         let fittestParentNum = (motherOrganism.timeAlive >= fatherOrganism.timeAlive ? 1 : 2);
 
         this.neatBrain.crossoverAndMutate(motherOrganism.neatBrain, fatherOrganism.neatBrain, fittestParentNum);
+    }
+
+    mutateThroughRadiation() {
+        for (let gene in this.genes) {
+            if (random(0, 1) < this.radiationMutationChance) {
+                // Mutate with higher rate
+                this.genes[gene].mutationFactor = this.radiationMutationFactor;
+                this.genes[gene].mutateGene();
+                
+
+                // We will later draw as many green circle shapes (indication mutations) as many radiation induced
+                // mutations there were. These green circles will be on the border of the organism body. Therefore we
+                // need to now initially set where in the body realtive to the organism the circles are by an angle
+                let angleRadians = random(0, 360) * (PI / 180);
+                this.physicalMutationRotations.push(angleRadians);
+            }
+        }
+
+        this.neatBrain.mutationChance = this.radiationMutationChance;
+        this.neatBrain.mutationFactor = this.radiationMutationFactor;
+        this.neatBrain.mutate();
+
+        this.baseEnergyLoss * 1000;
     }
 
     mate(organisms) {
@@ -201,17 +221,23 @@ class Organism {
                 otherOrganism.isAdult &&
                 !otherOrganism.oilCovered
             ) {
-                let childAmount = random([1, 2, 3]);
+                let childAmount = random([1, 2, 3, 4]);
                 for (let c=0; c<childAmount; c++) {
                     let child = new Organism();
                     child.inheritGenes(this, otherOrganism);
                     child.generation = Math.ceil((this.generation + otherOrganism.generation) / 2) + 1;
                     child.position.x = this.position.x - this.displaySize / 2;
                     child.position.y = this.position.y - this.displaySize / 2;
+
+                    if (this.isRadiated || otherOrganism.isRadiated) {
+                        child.isRadiated = true;
+                        child.mutateThroughRadiation()
+                    }
+
                     organisms.unshift(child);
 
-                    this.energy = 1.75;
-                    otherOrganism.energy = 1.75;
+                    this.energy = this.energyToBreed * 0.75;
+                    otherOrganism.energy = this.energyToBreed * 0.75;
                     this.totalChildren += childAmount;
                     otherOrganism.totalChildren += childAmount;
                 }
@@ -221,7 +247,6 @@ class Organism {
     }
 
     move(i) {
-        // let actions = this.brain.forward(this.observation);
         let actions = this.neatBrain.feedForward(this.observation);
 
         let turnAngleOutput = actions[0];        
@@ -263,6 +288,10 @@ class Organism {
         this.energyConsumption();
         this.timeAlive += 1;
 
+        if (this.insideOil) {
+            this.cleanCounter = 0;
+        }
+
         if (this.oilCovered && !this.insideOil) {
             this.cleanCounter += 1;
             if (this.cleanCounter === this.timeToClean) {
@@ -277,7 +306,6 @@ class Organism {
         if (this.oilCovered) {
             mainColor = color(145, 85, 250)
         }
-
         // Draw sensors
         let maxReachLine = this.displaySize * 1.3;
         let minReachLine = this.displaySize * 0.7;
@@ -298,6 +326,12 @@ class Organism {
         else {
             strokeWeight(1);
             stroke(mainColor);
+
+            // Give green stoke if the organism is radiation poisoned
+            if (this.isRadiated) {
+                stroke(0, 255, 0, 100);
+            }
+
             line(this.position.x, this.position.y, this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor);
             line(this.position.x, this.position.y, this.position.x + displaySensorRight.x * reachLineFactor, this.position.y + displaySensorRight.y * reachLineFactor);
             ellipse(this.position.x + displaySensorLeft.x * reachLineFactor, this.position.y + displaySensorLeft.y * reachLineFactor, int(this.displaySize * 0.2));
@@ -306,6 +340,12 @@ class Organism {
 
         strokeWeight(0);
         fill(mainColor);
+
+        // Give green stoke if the organism is radiation poisoned
+        if (this.isRadiated) {
+            strokeWeight(1);
+            stroke(0, 255, 0, 100);
+        }
         ellipse(this.position.x, this.position.y, this.displaySize);
 
         // Additional styling when oil covered
@@ -313,5 +353,19 @@ class Organism {
             fill(44, 11, 103);
             ellipse(this.position.x, this.position.y, this.displaySize * 0.75);
         }
+
+        // Additional shapes when radiation poisoned
+        if (this.isRadiated) {
+            let radius = this.displaySize / 2;
+            for (let i=0; i<this.physicalMutationRotations.length; i++) {
+                let mutationShapeAngle = this.physicalMutationRotations[i];
+                let x = this.position.x + radius * cos(mutationShapeAngle);
+                let y = this.position.y + radius * sin(mutationShapeAngle);
+
+                fill(0, 255, 0, 100);
+                ellipse(x, y, this.displaySize * 0.33, radius);
+            }
+        }
+        
     }
 }
