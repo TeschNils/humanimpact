@@ -7,7 +7,7 @@ class Organism {
 
         this.energy = 1.0;
         this.maxEnergy = 5.0;
-        this.baseEnergyLoss = 0.00075;
+        this.baseEnergyLoss = 0.0005;
         this.energyLossFactor = 0.0;
         this.currentEnergyLoss = this.baseEnergyLoss;
 
@@ -18,7 +18,7 @@ class Organism {
         this.isAdult = false;
         this.adultAge = 700;
         this.childSize = 5;
-        this.energyToBreed = 1.0;
+        this.energyToBreed = 1.125;
         this.totalChildren = 0;
 
         this.visualDebug = false;
@@ -228,12 +228,20 @@ class Organism {
                     child.generation = Math.ceil((this.generation + otherOrganism.generation) / 2) + 1;
                     child.position.x = this.position.x - this.displaySize / 2;
                     child.position.y = this.position.y - this.displaySize / 2;
+
+                    if (this.isRadiated || otherOrganism.isRadiated) {
+                        child.isRadiated = true;
+                        child.mutateThroughRadiation()
+                    }
+
                     organisms.unshift(child);
 
-                    this.energy = 0.75;
-                    otherOrganism.energy = 0.75;
+                    this.energy = this.energyToBreed * 0.75;
+                    otherOrganism.energy = this.energyToBreed * 0.75;
                     this.totalChildren += childAmount;
                     otherOrganism.totalChildren += childAmount;
+
+                    
                 }
                 break;
             }

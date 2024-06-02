@@ -2,7 +2,6 @@ let organisms = [];
 let foods = [];
 let numFood = 375;
 let numOrganisms = 750;
-let newFoodProbability = 0.015;
 
 let populationHistory = [numOrganisms];
 let generationDistribution;
@@ -100,24 +99,18 @@ function simulationStep() {
         return;
     }
 
-    //if (random(0, 1) <= newFoodProbability) {
-    //    foods.push(new Food(FoodType.Plant));
-    //}
-
     let minFoodAmount = 100;
     if (organisms.length / 2 > minFoodAmount) {
         minFoodAmount = organisms.length / 2;
     }
     let newFoodAmount = minFoodAmount - foods.length;
     if (iteration % 20 === 0) {
-        console.log(organisms.length, foods.length, newFoodAmount)
     }
     if (newFoodAmount > 0) {
         for (let i=0; i<newFoodAmount;i++) {
             foods.push(new Food(FoodType.Plant));
         }
     }
-
     
 
     // Handle current pollution
