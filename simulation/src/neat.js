@@ -24,17 +24,15 @@ class Genome {
         this.connections = [];
         this.nextNodeId = 0;
 
-        // Create input nodes
         for (let i = 0; i < inputSize; i++) {
             this.nodes.push(new Node(this.nextNodeId++));
         }
 
-        // Create output nodes
         for (let i = 0; i < outputSize; i++) {
             this.nodes.push(new Node(this.nextNodeId++));
         }
 
-        // Create connections between input and output nodes
+        // Connections between input and output nodes
         for (let i = 0; i < inputSize; i++) {
             for (let j = inputSize; j < inputSize + outputSize; j++) {
                 this.connections.push(new Connection(this.nodes[i], this.nodes[j], random(-2, 2)));
@@ -88,6 +86,9 @@ class NEATNetwork {
         this.inputSize = inputSize;
         this.outputSize = outputSize;
         this.genome = new Genome(inputSize, outputSize);
+
+        this.mutationChance = 0.075;
+        this.mutationFactor = 0.075;
     }
 
     feedForward(inputValues) {
@@ -98,29 +99,18 @@ class NEATNetwork {
         return outputValues;
     }
 
-    crossoverAndMutate(parent1, parent2, fittestParent) {
-        // fittestParent = 1 -> parent1
-        // fittestParent = 2 -> parent2
-
-        const mutationChance = 0.075;
-        const mutationFactor = 0.075;
-
-        // Assume parent1 and parent2 are instances of NEATNetwork
+    crossover(parent1, parent2, fittestParent) {
         const inputSize = parent1.inputSize;
         const outputSize = parent1.outputSize;
 
-        // Create a new genome for the child network
-        let childGenome = new Genome(inputSize, outputSize);
+        this.genome = new Genome(inputSize, outputSize);
 
-        // Dictionary to store nodes by id
         let nodeDict = {};
         parent1.genome.nodes.forEach(node => nodeDict[node.id] = new Node(node.id));
         parent2.genome.nodes.forEach(node => nodeDict[node.id] = new Node(node.id));
 
-        // Combine connections
         let allConnections = {};
 
-        // Add connections from both parents, avoiding duplicates
         parent1.genome.connections.forEach(connection => {
             let key = `${connection.from.id}-${connection.to.id}`;
             allConnections[key] = connection;
@@ -133,7 +123,6 @@ class NEATNetwork {
             }
         });
 
-        // Add connections to child genome, perform crossover
         for (let key in allConnections) {
             let parentConnection1 = parent1.genome.connections.find(conn => `${conn.from.id}-${conn.to.id}` === key);
             let parentConnection2 = parent2.genome.connections.find(conn => `${conn.from.id}-${conn.to.id}` === key);
@@ -141,56 +130,56 @@ class NEATNetwork {
             let chosenConnection;
             if (parentConnection1 && parentConnection2) {
                 if (random(0, 1) < 0.9) {
-                    chosenConnection = fittestParent === 1 ? parentConnection1 : parentConnection2
-                }
-                else {
-                    chosenConnection = fittestParent === 1 ? parentConnection2 : parentConnection1
+                    chosenConnection = fittestParent === 1 ? parentConnection1 : parentConnection2;
+                } else {
+                    chosenConnection = fittestParent === 1 ? parentConnection2 : parentConnection1;
                 }
             } else {
-                // Only one parent has the connection, choose that one
                 chosenConnection = parentConnection1 || parentConnection2;
             }
 
             let newConnection = new Connection(nodeDict[chosenConnection.from.id], nodeDict[chosenConnection.to.id], chosenConnection.weight);
             newConnection.enabled = chosenConnection.enabled;
 
-            // Mutate the connection weight with a small probability
-            if (random() < mutationChance) {
-                newConnection.weight += random(-1, 1) * mutationFactor;
-            }
-
-            childGenome.connections.push(newConnection);
+            this.genome.connections.push(newConnection);
         }
 
-        // Add nodes to child genome
         for (let nodeId in nodeDict) {
-            childGenome.nodes.push(nodeDict[nodeId]);
+            this.genome.nodes.push(nodeDict[nodeId]);
+        }
+    }
+
+    mutate() {
+        for (let connection of this.genome.connections) {
+            if (random() < this.mutationChance) {
+                connection.weight += random(-1, 1) * this.mutationFactor;
+            }
         }
 
-        // Mutate nodes (add new connections or nodes)
-        if (random() < mutationChance) {
-            // Add a new connection with a small probability
-            let fromNode = childGenome.nodes[Math.floor(random() * childGenome.nodes.length)];
-            let toNode = childGenome.nodes[Math.floor(random() * childGenome.nodes.length)];
+        if (random() < this.mutationChance) {
+            let fromNode = this.genome.nodes[Math.floor(random() * this.genome.nodes.length)];
+            let toNode = this.genome.nodes[Math.floor(random() * this.genome.nodes.length)];
             if (fromNode.id !== toNode.id) {
                 let newConnection = new Connection(fromNode, toNode, random(-2, 2));
-                childGenome.connections.push(newConnection);
+                this.genome.connections.push(newConnection);
             }
         }
 
-        if (random() < mutationChance) {
-            // Add a new node with a small probability
-            let existingConnection = childGenome.connections[Math.floor(random() * childGenome.connections.length)];
-            let newNode = new Node(childGenome.nextNodeId++);
+        if (random() < this.mutationChance) {
+            let existingConnection = this.genome.connections[Math.floor(random() * this.genome.connections.length)];
+            let newNode = new Node(this.genome.nextNodeId++);
             let newConnection1 = new Connection(existingConnection.from, newNode, 1.0);
             let newConnection2 = new Connection(newNode, existingConnection.to, existingConnection.weight);
-            childGenome.nodes.push(newNode);
-            childGenome.connections.push(newConnection1);
-            childGenome.connections.push(newConnection2);
+            this.genome.nodes.push(newNode);
+            this.genome.connections.push(newConnection1);
+            this.genome.connections.push(newConnection2);
             existingConnection.enabled = false;
         }
+    }
 
-        this.genome = childGenome;
+    crossoverAndMutate(parent1, parent2, fittestParent) {
+        this.crossover(parent1, parent2, fittestParent);
+        this.mutate();
     }
 }
 

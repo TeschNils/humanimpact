@@ -8,7 +8,7 @@ class Organism {
         this.energy = 1.0;
         this.maxEnergy = 5.0;
         this.baseEnergyLoss = 0.00075;
-        this.energyLossFactor = 0.0;//0.0001;
+        this.energyLossFactor = 0.0;
         this.currentEnergyLoss = this.baseEnergyLoss;
 
         this.timeAlive = 0;
@@ -18,7 +18,7 @@ class Organism {
         this.isAdult = false;
         this.adultAge = 700;
         this.childSize = 5;
-        this.energyToBreed = 2.0;
+        this.energyToBreed = 1.0;
         this.totalChildren = 0;
 
         this.visualDebug = false;
@@ -36,9 +36,7 @@ class Organism {
         this.turnAngleRange = this.genes.turnAngleRange.getGene();
         this.turnAngle;
 
-        this.brain = new Brain();
         this.observation = [];
-
         this.neatBrain = new NEATNetwork(3, 1);
 
         this.displaySize = this.childSize;
@@ -65,13 +63,11 @@ class Organism {
         this.cleanCounter = 0;
 
         this.isRadiated = false;
-        this.radiationMutationChance = 0.25;
+        this.radiationMutationChance = 0.5;
         this.radiationMutationFactor = 0.5;
         this.physicalMutationRotations = [];
     }
     eat(food) {
-        
-        
         // Diet specifies how much energy an organism gets through plant or meat
         if (food.type === FoodType.Plant) {
             if (this.energy >= this.maxEnergy) {
@@ -162,11 +158,11 @@ class Organism {
             if (food.type === FoodType.Plant) {
                 foodType = 1.0;
             }
-            //else if (food.type === FoodType.Meat) {
-            //    foodType = 0.5
-            //}
+            else if (food.type === FoodType.Meat) {
+                foodType = 0.5
+            }
             else if (food.foodType === FoodType.Rotten || food.foodType === FoodType.Poisoned) {
-                foodType = 0.5;
+                foodType = 0.1;
             }
         }        
 
@@ -176,13 +172,6 @@ class Organism {
     inheritGenes(motherOrganism, fatherOrganism) {
         for (let gene in this.genes) {
             this.genes[gene].inherit(motherOrganism.genes[gene], fatherOrganism.genes[gene]);
-        }
-
-        if (random(0, 1) < 0.5) {
-            this.brain.inheritBrain(motherOrganism.brain);
-        }
-        else {
-            this.brain.inheritBrain(fatherOrganism.brain);
         }
 
         let fittestParentNum = (motherOrganism.timeAlive >= fatherOrganism.timeAlive ? 1 : 2);
@@ -196,6 +185,7 @@ class Organism {
                 // Mutate with higher rate
                 this.genes[gene].mutationFactor = this.radiationMutationFactor;
                 this.genes[gene].mutateGene();
+                
 
                 // We will later draw as many green circle shapes (indication mutations) as many radiation induced
                 // mutations there were. These green circles will be on the border of the organism body. Therefore we
@@ -205,7 +195,11 @@ class Organism {
             }
         }
 
-        this.baseEnergyLoss * 10;
+        this.neatBrain.mutationChance = this.radiationMutationChance;
+        this.neatBrain.mutationFactor = this.radiationMutationFactor;
+        this.neatBrain.mutate();
+
+        this.baseEnergyLoss * 1000;
     }
 
     mate(organisms) {
@@ -236,8 +230,8 @@ class Organism {
                     child.position.y = this.position.y - this.displaySize / 2;
                     organisms.unshift(child);
 
-                    this.energy = 1.0;
-                    otherOrganism.energy = 1.0;
+                    this.energy = 0.75;
+                    otherOrganism.energy = 0.75;
                     this.totalChildren += childAmount;
                     otherOrganism.totalChildren += childAmount;
                 }
@@ -247,7 +241,6 @@ class Organism {
     }
 
     move(i) {
-        // let actions = this.brain.forward(this.observation);
         let actions = this.neatBrain.feedForward(this.observation);
 
         let turnAngleOutput = actions[0];        
