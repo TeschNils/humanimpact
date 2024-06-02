@@ -6,14 +6,14 @@ class Organism {
         this.generation = 0;
 
         this.energy = 1.0;
-        this.maxEnergy = 15;
-        this.initialEnergyLoss = 0.0001;
-        this.energyLossFactor = 0.00001;
-        this.currentEnergyLoss = this.initialEnergyLoss;
+        this.maxEnergy = 5.0;
+        this.baseEnergyLoss = 0.00075;
+        this.energyLossFactor = 0.0;//0.0001;
+        this.currentEnergyLoss = this.baseEnergyLoss;
 
         this.timeAlive = 0;
 
-        this.wallDamage = 0.075;
+        this.wallDamage = 0.0025;
 
         this.isAdult = false;
         this.adultAge = 700;
@@ -24,12 +24,12 @@ class Organism {
         this.visualDebug = false;
 
         this.genes = {
-            speed: new Gene("speed", 0.75, 1.25),
+            speed: new Gene("speed", 0.35, 0.9),
             size: new Gene("size", 5, 15),
-            sightReach: new Gene("sight reach", 45, 100),
-            sightAngle: new Gene("sight angle", 90, 150),
+            sightReach: new Gene("sight reach", 75, 125),
+            sightAngle: new Gene("sight angle", 100, 175),
             turnAngleRange: new Gene("turn angle", 10, 90),
-            diet: new Gene("diet", 0.0, 1.0)
+            diet: new Gene("diet", 0.9, 1.0)
         }
 
         // Organism can turn from -turnAngleRange/2 to +turnAngleRange/2
@@ -70,12 +70,13 @@ class Organism {
         this.physicalMutationRotations = [];
     }
     eat(food) {
-        if (this.energy >= this.maxEnergy) {
-            return;
-        }
+        
         
         // Diet specifies how much energy an organism gets through plant or meat
         if (food.type === FoodType.Plant) {
+            if (this.energy >= this.maxEnergy) {
+                return;
+            }
             this.energy += this.genes.diet.getGene() * food.energyWorth;
         }
         else if (food.type === FoodType.Meat) {
@@ -88,12 +89,13 @@ class Organism {
     }
 
     energyConsumption() {
-        let speedEnergyLoss = (this.currentEnergyLoss * (this.genes.speed.geneScore / 1.25));
-        let sizeEnergyLoss = (this.currentEnergyLoss * (this.genes.size.geneScore / 15));
-        let turnAngleLoss = (this.currentEnergyLoss * (Math.abs(this.turnAngle) / (this.turnAngleRange / 2)));
-        this.energy -= speedEnergyLoss + sizeEnergyLoss + turnAngleLoss;
+        this.currentEnergyLoss = this.baseEnergyLoss * Math.exp(this.energyLossFactor * this.timeAlive);
 
-        this.currentEnergyLoss = this.initialEnergyLoss * Math.exp(this.energyLossFactor * this.timeAlive);
+        let speedEnergyLoss = this.currentEnergyLoss * this.genes.speed.geneScore;
+        let sizeEnergyLoss = this.currentEnergyLoss * this.genes.size.geneScore;
+        let turnAngleLoss = (this.currentEnergyLoss * (Math.abs(this.turnAngle) / (this.turnAngleRange / 2)));
+
+        this.energy -= speedEnergyLoss + sizeEnergyLoss + turnAngleLoss;
     }
 
     observe(foods) {
@@ -117,6 +119,7 @@ class Organism {
 
         for (let i=0; i<foods.length - 1; i++) {
             let food = foods[i];
+
             let distanceToFood = this.position.dist(food.position);
 
             if (distanceToFood < (this.displaySize / 2 + food.size / 2)) {
@@ -159,11 +162,11 @@ class Organism {
             if (food.type === FoodType.Plant) {
                 foodType = 1.0;
             }
-            else if (food.type === FoodType.Meat) {
-                foodType = 0.5
-            }
+            //else if (food.type === FoodType.Meat) {
+            //    foodType = 0.5
+            //}
             else if (food.foodType === FoodType.Rotten || food.foodType === FoodType.Poisoned) {
-                foodType = 0.1;
+                foodType = 0.5;
             }
         }        
 
@@ -201,6 +204,8 @@ class Organism {
                 this.physicalMutationRotations.push(angleRadians);
             }
         }
+
+        this.baseEnergyLoss * 10;
     }
 
     mate(organisms) {
@@ -222,7 +227,7 @@ class Organism {
                 otherOrganism.isAdult &&
                 !otherOrganism.oilCovered
             ) {
-                let childAmount = random([1, 2, 3]);
+                let childAmount = random([1, 2, 3, 4]);
                 for (let c=0; c<childAmount; c++) {
                     let child = new Organism();
                     child.inheritGenes(this, otherOrganism);
@@ -231,8 +236,8 @@ class Organism {
                     child.position.y = this.position.y - this.displaySize / 2;
                     organisms.unshift(child);
 
-                    this.energy = 1.75;
-                    otherOrganism.energy = 1.75;
+                    this.energy = 1.0;
+                    otherOrganism.energy = 1.0;
                     this.totalChildren += childAmount;
                     otherOrganism.totalChildren += childAmount;
                 }

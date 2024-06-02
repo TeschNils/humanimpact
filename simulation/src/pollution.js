@@ -74,6 +74,7 @@ class OilPollution extends Pollution {
         super();
         this.minSize = 200;
         this.maxSize = 400;
+        this.minAmount = 3;
         this.maxAmount = 3;
         this.imagePath = "./assets/oil.svg";
 
@@ -86,6 +87,7 @@ class CO2Pollution extends Pollution {
         super();
         this.minSize = 500;
         this.maxSize = 800;
+        this.minAmount = 3;
         this.maxAmount = 3;
         this.imagePath = "./assets/co2.svg";
 
@@ -98,8 +100,8 @@ class NuclearWastePollution extends Pollution {
         super();
         this.minSize = 100;
         this.maxSize = 200;
-        this.minAmount = 3;
-        this.maxAmount = 3;
+        this.minAmount = 5;
+        this.maxAmount = 5;
         this.reduceOverTime = false;
         this.imagePath = "./assets/nuclear-waste.svg";
 
