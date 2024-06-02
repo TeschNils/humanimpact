@@ -225,9 +225,18 @@ function simulationStep() {
         if (millis() >= bannerStart + bannerTime * 1000) {
             showBanner = false;
             // set pollution here
-            if (pollution === "oil") { oilPollution = new OilPollution() }
-            else if (pollution === "co2") { co2Pollution = new CO2Pollution() }
-            else if (pollution === "nuclear") { nuclearWastePollution = new NuclearWastePollution() }
+            if (pollution === "oil") {
+                oilPollution = new OilPollution();
+                createAlertCard(PollutionType.Oil);
+            }
+            else if (pollution === "co2") {
+                co2Pollution = new CO2Pollution();
+                createAlertCard(PollutionType.CO2);
+            }
+            else if (pollution === "nuclear") {
+                nuclearWastePollution = new NuclearWastePollution();
+                createAlertCard(PollutionType.Nuclear);
+            }
         }
     }
 }

@@ -71,7 +71,3 @@ async function createAlertCard(pollutionTypeObject) {
     var parentElement = document.getElementsByClassName("info-card-list")[0];
     parentElement.appendChild(infoCard);
 }
-
-createAlertCard(PollutionType.CO2);
-createAlertCard(PollutionType.Oil);
-createAlertCard(PollutionType.Nuclear);

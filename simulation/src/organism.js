@@ -240,8 +240,6 @@ class Organism {
                     otherOrganism.energy = this.energyToBreed * 0.75;
                     this.totalChildren += childAmount;
                     otherOrganism.totalChildren += childAmount;
-
-                    
                 }
                 break;
             }
