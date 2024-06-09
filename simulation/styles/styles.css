@@ -110,7 +110,8 @@ main {
 
 .info-title {
     font-size: 35px;
-    color: white
+    color: white;
+    font-family: "Green Mountain 3"
 }
 
 
@@ -119,41 +120,44 @@ main {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding-top: 30px;
 }
 
 
 .info-card {
     border-radius: 5px;
     height: auto;
+    margin: 30px;
+    margin-top: 15px;
+    margin-bottom: 0px;
+    background-color: rgb(228, 36, 48, 0.2);
+}
+
+.info-card-inner {
+    margin: 10px;
+    border: 1px solid rgb(228, 36, 48);
+}
+
+.info-card-banner {
+    width: 100%;
 }
 
 .info-card-title {
     margin: 0px;
-    font-size: 15px;
+    margin-top: -2.25em;
+    font-size: 1.5em;
     font-weight: 600;
-    height: 30px;
-    line-height: 30px;
+    height: 55px;
     color: white;
     text-align: center;
-    background-size: 100%;
-}
-
-.title-critical {
-    background-image: url("../assets/alert-banner-red.svg");
-}
-
-.title-warning {
-    background-image: url("../assets/alert-banner-yellow.svg");
 }
 
 .info-card-text {
-    margin: 0px;
-    margin-top: 10px;
-    font-size: 14px;
+    font-size: 1em;
+    line-height: 1.125em;
+    font-weight: 500;
     color: white;
     margin: 15px;
+    text-align: justify;
 }
 
 #simulation-container {

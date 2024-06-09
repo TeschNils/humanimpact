@@ -18,7 +18,7 @@ class Organism {
         this.isAdult = false;
         this.adultAge = 700;
         this.childSize = 5;
-        this.energyToBreed = 1.125;
+        this.energyToBreed = 1.25;
         this.totalChildren = 0;
 
         this.visualDebug = false;
@@ -28,8 +28,8 @@ class Organism {
             size: new Gene("size", 5, 15),
             sightReach: new Gene("sight reach", 75, 125),
             sightAngle: new Gene("sight angle", 100, 175),
-            turnAngleRange: new Gene("turn angle", 10, 90),
-            diet: new Gene("diet", 0.9, 1.0)
+            turnAngleRange: new Gene("turn angle", 10, 30),
+            diet: new Gene("diet", 0.999, 1.0)
         }
 
         // Organism can turn from -turnAngleRange/2 to +turnAngleRange/2
@@ -159,10 +159,10 @@ class Organism {
                 foodType = 1.0;
             }
             else if (food.type === FoodType.Meat) {
-                foodType = 0.5
+                foodType = 0.15
             }
             else if (food.foodType === FoodType.Rotten || food.foodType === FoodType.Poisoned) {
-                foodType = 0.1;
+                foodType = 0.5;
             }
         }        
 
@@ -236,8 +236,8 @@ class Organism {
 
                     organisms.unshift(child);
 
-                    this.energy = this.energyToBreed * 0.75;
-                    otherOrganism.energy = this.energyToBreed * 0.75;
+                    this.energy = this.energyToBreed * 0.15;
+                    otherOrganism.energy = this.energyToBreed * 0.15;
                     this.totalChildren += childAmount;
                     otherOrganism.totalChildren += childAmount;
                 }

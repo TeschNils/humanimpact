@@ -55,19 +55,29 @@ async function createAlertCard(pollutionTypeObject) {
     var infoCard = document.createElement("div");
     infoCard.classList.add("info-card");
 
+    var infoCardInner = document.createElement("div");
+    infoCardInner.classList.add("info-card-inner");
+
+    var bannerImage = document.createElement("img");
+    bannerImage.classList.add("info-card-banner");
+    bannerImage.src = "../assets/alert-header.svg";
+
     var titleElement = document.createElement("h1");
     titleElement.classList.add("info-card-title");
     titleElement.textContent = title;
-
-    titleElement.classList.add("title-critical");
 
     var textElement = document.createElement("p");
     textElement.classList.add("info-card-text");
     textElement.textContent = text;
 
-    infoCard.appendChild(titleElement);
-    infoCard.appendChild(textElement);
+    infoCard.appendChild(infoCardInner);
+    infoCardInner.appendChild(bannerImage);
+    infoCardInner.appendChild(titleElement);
+    infoCardInner.appendChild(textElement);
 
     var parentElement = document.getElementsByClassName("info-card-list")[0];
     parentElement.appendChild(infoCard);
 }
+
+
+createAlertCard(PollutionType.Oil)
