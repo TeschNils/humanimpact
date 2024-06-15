@@ -96,5 +96,3 @@ function createAlertCard(pollutionTypeObject) {
     }
   }
 }
-
-createAlertCard(PollutionType.Oil);
