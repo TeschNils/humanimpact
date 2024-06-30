@@ -1,7 +1,7 @@
 let organisms = [];
 let foods = [];
-let numFood = 375;
-let numOrganisms = 750;
+let numFood = 200;
+let numOrganisms = 550;
 
 let populationHistory = [numOrganisms];
 let generationDistribution;

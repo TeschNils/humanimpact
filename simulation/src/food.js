@@ -73,9 +73,9 @@ class Food {
 
     update() {
         this.timeAlive += 1;
-        if (this.type === FoodType.Plant && this.timeAlive === this.plantDuration) {
-            this.rotFood();
-        }
+        //if (this.type === FoodType.Plant && this.timeAlive === this.plantDuration) {
+        //    this.rotFood();
+        //}
         
         if (this.timeAlive === this.lifeTime) {
             this.desintegrated = true;
