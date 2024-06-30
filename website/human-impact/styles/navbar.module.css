@@ -1,0 +1,35 @@
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f2336;
+    padding: 20px 30px;
+    position: sticky;
+}
+
+.humanImpactContainer {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.gitlabContainer {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.humanImpact {
+    max-width: 40%;
+    height: auto;
+}
+
+.gitLab {
+    max-width: 5%;
+    height: auto;
+}
+
+.gitlabLink {
+    display: contents; /* Ensures the link is only as large as the image */
+}

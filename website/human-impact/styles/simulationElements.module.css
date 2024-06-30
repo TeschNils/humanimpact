@@ -1,0 +1,97 @@
+.simulationElements {
+    display: flex;
+    flex-direction: column;
+}
+
+.headline h3 {
+    color: white;
+    text-align: center;
+    margin-bottom: 5%;
+}
+
+.organism {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10%;
+}
+
+.pollution {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10%;
+}
+
+.section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    gap: 2%;
+}
+
+.text {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.text p {
+    width: 90%;
+    text-align: center;
+    color: white;
+    text-align: justify;
+}
+
+.imageContainer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 50vh;
+    border-radius: 12px;
+    gap: 15px;
+}
+
+.imageContainer p {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.imageContainer:hover {
+    transform: scale(1.1);
+    -webkit-transition: transform 0.5s;
+    transition: transform 0.5s;
+    background-color: #1f2336;
+    cursor: pointer;
+}
+
+.organismContainer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.foodContainer {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    height: 20vh;
+    border-radius: 12px;
+}
+
+.foodContainer:hover {
+    transform: scale(1.1);
+    -webkit-transition: transform 0.5s;
+    transition: transform 0.5s;
+    cursor: pointer;
+
+}
+
+.image {
+    max-width: 70%;
+    height: auto;
+}
