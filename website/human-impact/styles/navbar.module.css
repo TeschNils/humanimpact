@@ -3,7 +3,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: #1f2336;
+    background-color: #000000;
     padding: 20px 30px;
     position: sticky;
 }
@@ -32,4 +32,14 @@
 
 .gitlabLink {
     display: contents; /* Ensures the link is only as large as the image */
+}
+
+@media (max-width: 768px) {
+    .humanImpact {
+        max-width: 80%;
+    }
+
+    .gitLab {
+        max-width: 20%;
+    }
 }

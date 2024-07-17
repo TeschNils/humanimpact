@@ -1,9 +1,26 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import styles from "@/styles/layout.module.css";
+import localFont from "next/font/local";
 import Head from "next/head";
+import styles from "../styles/layout.module.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const greenMountain = localFont({
+  src: "../public/fonts/greenm03.ttf",
+})
+
+const directiveFour = localFont({
+    src: [
+        {
+            path: "../public/fonts/Directive Four Condensed.otf",
+            weight: "400",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Directive Four Condensed Bold.otf",
+            weight: "700",
+            style: "bold",
+        }
+    ]
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,13 +33,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={directiveFour.className}>
       <meta charSet="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"></meta>
+      <meta name="theme-color" content="#000000" />
       <Head>
           <link rel="icon" href="./favicon.ico" />
       </Head>
       <title>HUMAN IMPACT</title>
-      <body className={inter.className} style={{margin: 0}}>
+      <body className={styles.body}>
         {children}
       </body>
     </html>
